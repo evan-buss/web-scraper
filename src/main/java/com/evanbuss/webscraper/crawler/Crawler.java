@@ -1,14 +1,11 @@
 package com.evanbuss.webscraper.crawler;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 1) Parse the users given url, ensure it is valid
@@ -21,39 +18,48 @@ import java.net.URL;
  *
  * <p>4) Each link should be followed
  */
-public class Crawler {
+public class Crawler implements Runnable {
 
   private String baseURL;
-  private JTable table;
+  private ParsedPagesModel model;
+  private BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+  private ThreadPoolExecutor poolExecutor;
+  private long delay;
+  private int timeout;
 
-  public Crawler() {
-  }
-
-  public void startCrawl(String url, JTable table) throws MalformedURLException {
-    this.table = table;
+  public Crawler(String url, ParsedPagesModel model, int threads, int timeout, int delay) {
+    this.model = model;
     this.baseURL = url;
+    this.delay = delay;
+    this.timeout = timeout;
 
-    startScraping();
+    poolExecutor =
+        new ThreadPoolExecutor(
+            threads, threads, timeout, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
   }
 
-  private void startScraping() throws MalformedURLException {
+  // TODO: Create builder to enable easier construction
+  static class CrawlerBuilder {
+  }
+
+  @Override
+  public void run() {
     try {
       URL url = new URL(baseURL);
     } catch (MalformedURLException ex) {
-      throw new MalformedURLException();
+      System.out.println("bad url");
     }
 
-    try {
+    long startTime = System.currentTimeMillis();
+    queue.offer(baseURL);
+    do {
+      if (!queue.isEmpty()) {
+        System.out.printf(
+            "Queue Size: %d Active Threads: %d\n", queue.size(), poolExecutor.getActiveCount());
+        poolExecutor.execute(new ScrapingThread(queue.poll(), model, queue, delay));
+      }
+    } while (((System.currentTimeMillis() - startTime) / 1000F) < timeout);
 
-      Document htmlDoc = Jsoup.connect(baseURL).get();
-      Elements links = htmlDoc.select("a[href]");
-      links.forEach(
-          element ->
-              ((DefaultTableModel) table.getModel())
-                  .addRow(new String[]{element.attr("abs:href"), element.text()}));
-
-    } catch (IOException e) {
-      System.out.println("Error opening connection");
-    }
+    System.out.println("Done scraping");
   }
 }
