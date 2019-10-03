@@ -6,18 +6,29 @@ import com.evanbuss.webscraper.crawler.ParsedPagesModel;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class MainWindow extends JFrame {
 
   private File selectedFile;
   private ParsedPagesModel model = new ParsedPagesModel();
+  private ExecutorService executor = Executors.newSingleThreadExecutor();
+  private boolean isRunning = false;
+  private JTextField urlField;
+  private Timer timer;
+  private JTextField depthTA;
+  private JCheckBox depthCheckBox;
+  private JTextField timeoutTF;
+  private JCheckBox timeoutCheckBox;
+  private JTextField workersTA;
+  private Crawler crawler = null;
 
   public MainWindow() {
     setDefaultCloseOperation(EXIT_ON_CLOSE);
-    setSize(500, 250);
+    setSize(500, 300);
     setTitle("Web Crawler");
     setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 
@@ -25,7 +36,7 @@ public class MainWindow extends JFrame {
     // URL and Parse Button
     // ==================================
     JPanel controlsPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-    JTextField urlField = new JTextField(25);
+    urlField = new JTextField(25);
     JButton runButton = new JButton("Start");
     controlsPanel.add(new JLabel("Starting URL:"));
     controlsPanel.add(urlField);
@@ -35,7 +46,7 @@ public class MainWindow extends JFrame {
     // Thread Workers Controls
     // ==================================
     JPanel workersPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-    JTextField workersTA = new JTextField(30);
+    workersTA = new JTextField(30);
     workersTA.setText("5");
     workersPanel.add(new JLabel("Workers:"));
     workersPanel.add(workersTA);
@@ -43,9 +54,9 @@ public class MainWindow extends JFrame {
     // ==================================
     // Maximum Depth Controls
     // ==================================
-    JTextField depthTA = new JTextField(25);
+    depthTA = new JTextField(25);
     depthTA.setText("50");
-    JCheckBox depthCheckBox = new JCheckBox();
+    depthCheckBox = new JCheckBox();
     JPanel depthPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     depthPanel.add(new JLabel("Maximum Depth:"));
     depthPanel.add(depthTA);
@@ -54,9 +65,9 @@ public class MainWindow extends JFrame {
     // ==================================
     // Time Limit Controls
     // ==================================
-    JTextField timeoutTF = new JTextField(25);
+    timeoutTF = new JTextField(25);
     timeoutTF.setText("120");
-    JCheckBox timeoutCheckBox = new JCheckBox();
+    timeoutCheckBox = new JCheckBox();
     JPanel timeoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     timeoutPanel.add(new JLabel("Timeout (seconds):"));
     timeoutPanel.add(timeoutTF);
@@ -66,7 +77,7 @@ public class MainWindow extends JFrame {
     // Elapsed Time
     // ==================================
     JPanel elapsedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JLabel elapsedLabel = new JLabel("0:00");
+    JLabel elapsedLabel = new JLabel("0 seconds");
     elapsedPanel.add(new JLabel("Elapsed Time:"));
     elapsedPanel.add(elapsedLabel);
 
@@ -77,6 +88,14 @@ public class MainWindow extends JFrame {
     JLabel parsedLabel = new JLabel("0");
     parsedPanel.add(new JLabel("Pages Parsed:"));
     parsedPanel.add(parsedLabel);
+
+    // ==================================
+    // Worker Stats
+    // ==================================
+    JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JLabel statsLabel = new JLabel("0 - 0");
+    statsPanel.add(new JLabel("Completed - Queued:"));
+    statsPanel.add(statsLabel);
 
     // ==================================
     // File Controls
@@ -106,20 +125,41 @@ public class MainWindow extends JFrame {
 
     saveButton.addActionListener(e -> model.saveToFile(selectedFile));
 
+    // Timer to show total elapsed time
     final int[] currentTime = {0};
-    Timer timer =
+    timer =
         new Timer(
             1000,
             actionEvent -> {
               currentTime[0]++;
-              elapsedLabel.setText(String.valueOf(currentTime[0]));
+              elapsedLabel.setText(currentTime[0] + " seconds");
+              parsedLabel.setText(String.valueOf(model.getSize()));
+              long[] stats = crawler.getStats();
+              statsLabel.setText(stats[0] + " - " + stats[1]);
             });
 
     runButton.addActionListener(
         e -> {
-          ExecutorService executor = Executors.newSingleThreadExecutor();
-          Future<?> done = executor.submit(new Crawler(urlField.getText(), model, 2, 10, 1000));
-          timer.start();
+          if (!isRunning) {
+            runButton.setText("Stop");
+
+            // Ensure valid URL
+            try {
+              URL url = new URL(urlField.getText());
+            } catch (MalformedURLException ex) {
+              System.out.println("bad url");
+              return;
+            }
+
+            crawler = buildCrawler();
+            executor.submit(crawler);
+
+            timer.start();
+          } else {
+            crawler.shutdown();
+            runButton.setText("Start");
+          }
+          isRunning = !isRunning;
         });
 
     add(controlsPanel);
@@ -128,8 +168,27 @@ public class MainWindow extends JFrame {
     add(timeoutPanel);
     add(elapsedPanel);
     add(parsedPanel);
+    add(statsPanel);
     add(filePanel);
 
     setVisible(true);
+  }
+
+  private Crawler buildCrawler() {
+    // Build a crawler with the desired conditions
+    Crawler.Builder builder =
+        new Crawler.Builder(urlField.getText(), model, timer)
+            .numThreads(Integer.parseInt(workersTA.getText()))
+            .delay(2000);
+
+    if (depthCheckBox.isSelected()) {
+      builder = builder.depth(Integer.parseInt(depthTA.getText()));
+    }
+
+    if (timeoutCheckBox.isSelected()) {
+      builder = builder.timeout(Integer.parseInt(timeoutTF.getText()));
+    }
+
+    return builder.build();
   }
 }

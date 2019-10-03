@@ -3,29 +3,40 @@ package com.evanbuss.webscraper.crawler;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Vector;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class ParsedPagesModel {
-  private Vector<String[]> data = new Vector<>();
+  private ConcurrentMap<String, Integer> data = new ConcurrentHashMap<>();
+  private long counter;
 
-  void addItem(String[] item) {
-    data.add(item);
+  void addItem(String url, int depth) {
+    Integer present = data.putIfAbsent(url, depth);
+    if (present == null) {
+      counter++;
+    }
   }
 
-  public int getSize() {
-    return data.size();
+  public long getSize() {
+    return counter;
   }
 
   public void saveToFile(File selectedFile) {
-    try {
-      PrintWriter writer = new PrintWriter(selectedFile);
-      for (String[] d : data) {
-        writer.println(d[0]);
-        writer.println("\t" + d[1]);
-      }
-      writer.close();
-    } catch (IOException e) {
-      System.out.println("Could not open Print Writer");
-    }
+    Thread writerThread =
+        new Thread(
+            () -> {
+              try {
+                PrintWriter writer = new PrintWriter(selectedFile);
+                for (Map.Entry<String, Integer> entry : data.entrySet()) {
+                  writer.println(entry.getKey() + ", " + entry.getValue());
+                }
+                writer.close();
+              } catch (IOException e) {
+                System.out.println("Could not open Print Writer");
+              }
+            });
+
+    writerThread.start();
   }
 }

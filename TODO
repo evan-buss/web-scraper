@@ -1,0 +1,10 @@
+Add option to complete jobs before stopping
+
+Saw an output like
+
+https://evanbuss.com
+https://evanbuss.com
+https://evanbuss.com
+
+in the console.  I think this may be due to multiple threads popping the top at the same time?? I need to learn more
+about the blockedqueue. I may switch my design so that each thread is responsible for loop and handling it's own shit
