@@ -1,5 +1,7 @@
 package com.evanbuss.webscraper.crawler;
 
+import com.evanbuss.webscraper.models.LinkModel;
+import com.evanbuss.webscraper.models.ParsedPagesModel;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,23 +35,33 @@ public class ScrapingThread implements Runnable {
               .userAgent(
                   "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:69.0) Gecko/20100101 Firefox/69.0")
               .execute();
-      System.out.println("NEW THREAD: " + linkModel.getUrl() + " - " + response.statusCode());
 
+      if (response.statusCode() != 200) {
+        System.out.println(response.statusCode());
+      }
+
+      // System.out.println("NEW THREAD: " + linkModel.getUrl() + " - " + response.statusCode());
       Document htmlDoc = response.parse();
-
       Elements links = htmlDoc.select("a[href]");
+
+      // Add all visited base links to the model
+      model.addItem(linkModel.getUrl(), linkModel.getDepth());
+
       links.forEach(
           element -> {
             String link = element.attr("abs:href");
             LinkModel found = new LinkModel(link, linkModel.getDepth() + 1);
-            if (!queue.contains(found)) queue.offer(found);
-            model.addItem(link, linkModel.getDepth() + 1);
+            // If the found link hasn't been visited before, add it to the parse queue.
+            if (!model.contains(found) && !queue.contains(found)) {
+              queue.offer(found);
+            }
           });
-
     } catch (IOException e) {
       // System.out.println("Error opening connection" + e);
     } catch (InterruptedException e) {
       // e.printStackTrace();
+    } catch (IllegalArgumentException e) {
+      //
     }
   }
 }

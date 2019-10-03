@@ -1,4 +1,4 @@
-package com.evanbuss.webscraper.crawler;
+package com.evanbuss.webscraper.models;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,11 +11,15 @@ public class ParsedPagesModel {
   private ConcurrentMap<String, Integer> data = new ConcurrentHashMap<>();
   private long counter;
 
-  void addItem(String url, int depth) {
+  public void addItem(String url, int depth) {
     Integer present = data.putIfAbsent(url, depth);
     if (present == null) {
       counter++;
     }
+  }
+
+  public boolean contains(LinkModel link) {
+    return data.containsKey(link.getUrl());
   }
 
   public long getSize() {

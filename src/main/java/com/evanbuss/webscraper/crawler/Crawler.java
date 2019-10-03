@@ -1,5 +1,8 @@
 package com.evanbuss.webscraper.crawler;
 
+import com.evanbuss.webscraper.models.LinkModel;
+import com.evanbuss.webscraper.models.ParsedPagesModel;
+
 import javax.swing.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -14,10 +17,10 @@ public class Crawler implements Runnable {
   private int timeout;
   private int maxDepth;
   private boolean isRunning = true;
-  private boolean finishAllJobs = true;
+  private boolean finishAllJobs;
 
   private Timer timer;
-  private ThreadPoolExecutor poolExecutor;
+  private ThreadPoolExecutor threadPool;
   private BlockingQueue<LinkModel> queue = new LinkedBlockingQueue<>();
 
   public static class Builder {
@@ -31,11 +34,17 @@ public class Crawler implements Runnable {
     private int timeout = -1;
     private long delay = 500;
     private int maxDepth = -1;
+    private boolean finishAllJobs = false;
 
     public Builder(String url, ParsedPagesModel model, Timer timer) {
       this.url = url;
       this.model = model;
       this.timer = timer;
+    }
+
+    public Builder finishAllJobs(boolean bool) {
+      finishAllJobs = bool;
+      return this;
     }
 
     public Builder numThreads(int numThreads) {
@@ -63,6 +72,24 @@ public class Crawler implements Runnable {
     }
   }
 
+  private Crawler(Builder builder) {
+    this.url = builder.url;
+    this.model = builder.model;
+    this.delay = builder.delay;
+    this.timeout = builder.timeout;
+    this.maxDepth = builder.maxDepth;
+    this.timer = builder.timer;
+    this.finishAllJobs = builder.finishAllJobs;
+
+    threadPool =
+        new ThreadPoolExecutor(
+            builder.numThreads,
+            builder.numThreads,
+            100,
+            TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>());
+  }
+
   @Override
   public String toString() {
     return "Crawler{"
@@ -78,34 +105,14 @@ public class Crawler implements Runnable {
         + '}';
   }
 
-  private Crawler(Builder builder) {
-    this.url = builder.url;
-    this.model = builder.model;
-    this.delay = builder.delay;
-    this.timeout = builder.timeout;
-    this.maxDepth = builder.maxDepth;
-    this.timer = builder.timer;
-
-    poolExecutor =
-        new ThreadPoolExecutor(
-            builder.numThreads,
-            builder.numThreads,
-            100,
-            TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>());
-  }
-
-  // You can have multiple types of terminating conditions
-  //  1) Maximum depth - Keep track of the link's depth along with the url in the queue, don't run
-  // if limit reached
-  //  2) Timeout - Stop parsing after a certain period has passed
-  //  3) No Terminator - Keep going until user wishes to stop
-
   @Override
   public void run() {
     long startTime = System.currentTimeMillis();
-    queue.offer(new LinkModel(url, 0));
+    queue.offer(new LinkModel(url, 1));
 
+    // @FUTURE: come up with better way to parse the data. Not sure if the current thread logic is
+    // good or even working
+    LinkModel link;
     while (isRunning) {
       // Timeout is set and current time exceeds the timeout
       if (timeout != -1) {
@@ -115,34 +122,41 @@ public class Crawler implements Runnable {
         }
       }
 
-      // I have a blocking queue. I need to use it...
-      if (!queue.isEmpty()) {
-        LinkModel link = queue.poll();
+      try {
+        // Wait 4 seconds
+        link = queue.poll(4, TimeUnit.SECONDS);
+
+        if (link == null) {
+          System.out.println("4 Second Timeout");
+          break;
+        }
 
         if (link.getDepth() <= maxDepth || maxDepth == -1) {
-          poolExecutor.execute(new ScrapingThread(link, model, queue, delay));
+          System.out.println(queue);
+          threadPool.execute(new ScrapingThread(link, model, queue, delay));
+        } else if (link.getDepth() > maxDepth) {
+          System.out.println("Over max depth");
+          break;
         }
+      } catch (InterruptedException e) {
+        e.printStackTrace();
       }
     }
 
     System.out.println("Done Parsing");
     if (finishAllJobs) {
-      poolExecutor.shutdown();
+      threadPool.shutdown();
     } else {
-      poolExecutor.shutdownNow();
+      threadPool.shutdownNow();
     }
 
-    while (poolExecutor.getTaskCount() != poolExecutor.getCompletedTaskCount()) {
+    while (threadPool.getTaskCount() != threadPool.getCompletedTaskCount()) {
     }
     timer.stop();
   }
 
   public long[] getStats() {
-    return new long[]{poolExecutor.getCompletedTaskCount(), poolExecutor.getTaskCount()};
-  }
-
-  public void setFinishAllJobs(boolean bool) {
-    finishAllJobs = bool;
+    return new long[]{threadPool.getCompletedTaskCount(), threadPool.getTaskCount()};
   }
 
   public void shutdown() {

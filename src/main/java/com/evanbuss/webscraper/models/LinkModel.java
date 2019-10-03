@@ -1,4 +1,4 @@
-package com.evanbuss.webscraper.crawler;
+package com.evanbuss.webscraper.models;
 
 import java.util.Objects;
 
@@ -6,24 +6,24 @@ public class LinkModel {
   private String url;
   private int depth;
 
-  LinkModel(String url, int depth) {
+  public LinkModel(String url, int depth) {
     this.url = url;
     this.depth = depth;
   }
 
-  String getUrl() {
+  public String getUrl() {
     return url;
   }
 
-  void setUrl(String url) {
+  public void setUrl(String url) {
     this.url = url;
   }
 
-  int getDepth() {
+  public int getDepth() {
     return depth;
   }
 
-  void setDepth(int depth) {
+  public void setDepth(int depth) {
     this.depth = depth;
   }
 
@@ -38,5 +38,10 @@ public class LinkModel {
   @Override
   public int hashCode() {
     return Objects.hash(url, depth);
+  }
+
+  @Override
+  public String toString() {
+    return "LinkModel{" + "url='" + url + '\'' + ", depth=" + depth + '}';
   }
 }

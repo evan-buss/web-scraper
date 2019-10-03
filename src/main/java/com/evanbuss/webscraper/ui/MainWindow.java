@@ -1,7 +1,7 @@
 package com.evanbuss.webscraper.ui;
 
 import com.evanbuss.webscraper.crawler.Crawler;
-import com.evanbuss.webscraper.crawler.ParsedPagesModel;
+import com.evanbuss.webscraper.models.ParsedPagesModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,12 +25,15 @@ public class MainWindow extends JFrame {
   private JCheckBox timeoutCheckBox;
   private JTextField workersTA;
   private Crawler crawler = null;
+  private JCheckBox parseCB;
+  private JTextField delayTF;
 
   public MainWindow() {
     setDefaultCloseOperation(EXIT_ON_CLOSE);
-    setSize(500, 300);
+    setSize(500, 340);
     setTitle("Web Crawler");
     setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
+    setResizable(false);
 
     // ==================================
     // URL and Parse Button
@@ -74,6 +77,15 @@ public class MainWindow extends JFrame {
     timeoutPanel.add(timeoutCheckBox);
 
     // ==================================
+    // Delay Settings
+    // ==================================
+    JPanel delayPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    delayTF = new JTextField(10);
+    delayTF.setText("1000");
+    delayPanel.add(new JLabel("Delay Between Requests (milliseconds):"));
+    delayPanel.add(delayTF);
+
+    // ==================================
     // Elapsed Time
     // ==================================
     JPanel elapsedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -93,15 +105,24 @@ public class MainWindow extends JFrame {
     // Worker Stats
     // ==================================
     JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JLabel statsLabel = new JLabel("0 - 0");
-    statsPanel.add(new JLabel("Completed - Queued:"));
+    JLabel statsLabel = new JLabel("0 / 0");
+    statsPanel.add(new JLabel("Completed / Queued:"));
     statsPanel.add(statsLabel);
+
+    // ==================================
+    // Parse Settings
+    // ==================================
+    JPanel finishAllPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JLabel parseLabel = new JLabel("Clear Work Queue Before Closing: ");
+    parseCB = new JCheckBox();
+    finishAllPanel.add(parseLabel);
+    finishAllPanel.add(parseCB);
 
     // ==================================
     // File Controls
     // ==================================
     JPanel filePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    JLabel filePathLabel = new JLabel();
+    JTextField filePathLabel = new JTextField(19);
     JButton fileButton = new JButton("Select File");
     JButton saveButton = new JButton("Dump Data");
 
@@ -119,7 +140,7 @@ public class MainWindow extends JFrame {
           int option = filePicker.showOpenDialog(this.getContentPane());
           if (option == JFileChooser.APPROVE_OPTION) {
             selectedFile = filePicker.getSelectedFile();
-            filePathLabel.setText(selectedFile.getName());
+            filePathLabel.setText(selectedFile.getAbsolutePath());
           }
         });
 
@@ -135,7 +156,7 @@ public class MainWindow extends JFrame {
               elapsedLabel.setText(currentTime[0] + " seconds");
               parsedLabel.setText(String.valueOf(model.getSize()));
               long[] stats = crawler.getStats();
-              statsLabel.setText(stats[0] + " - " + stats[1]);
+              statsLabel.setText(stats[0] + " / " + stats[1]);
             });
 
     runButton.addActionListener(
@@ -166,9 +187,13 @@ public class MainWindow extends JFrame {
     add(workersPanel);
     add(depthPanel);
     add(timeoutPanel);
+    add(delayPanel);
+    add(finishAllPanel);
+    add(new JSeparator());
     add(elapsedPanel);
     add(parsedPanel);
     add(statsPanel);
+    add(new JSeparator());
     add(filePanel);
 
     setVisible(true);
@@ -179,7 +204,8 @@ public class MainWindow extends JFrame {
     Crawler.Builder builder =
         new Crawler.Builder(urlField.getText(), model, timer)
             .numThreads(Integer.parseInt(workersTA.getText()))
-            .delay(2000);
+            .finishAllJobs(parseCB.isSelected())
+            .delay(500);
 
     if (depthCheckBox.isSelected()) {
       builder = builder.depth(Integer.parseInt(depthTA.getText()));
