@@ -89,21 +89,6 @@ public class Crawler implements Runnable {
   }
 
   @Override
-  public String toString() {
-    return "Crawler{"
-        + "url='"
-        + url
-        + '\''
-        + ", delay="
-        + delay
-        + ", timeout="
-        + timeout
-        + ", maxDepth="
-        + maxDepth
-        + '}';
-  }
-
-  @Override
   public void run() {
     long startTime = System.currentTimeMillis();
     queue.offer(new LinkModel(url, 1));
@@ -164,5 +149,20 @@ public class Crawler implements Runnable {
 
   public void setDoneListener(CrawlingDoneListener listener) {
     doneListener = listener;
+  }
+
+  @Override
+  public String toString() {
+    return "Crawler{"
+        + "url='"
+        + url
+        + '\''
+        + ", delay="
+        + delay
+        + ", timeout="
+        + timeout
+        + ", maxDepth="
+        + maxDepth
+        + '}';
   }
 }

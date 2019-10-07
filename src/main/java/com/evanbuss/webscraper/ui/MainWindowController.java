@@ -88,11 +88,6 @@ public class MainWindowController {
         .addListener(
             observable ->
                 timeoutEnabledCB.setText(timeoutEnabledCB.isSelected() ? "Enabled" : "Disabled"));
-
-    clearQueueCB
-        .selectedProperty()
-        .addListener(
-            observable -> clearQueueCB.setText(clearQueueCB.isSelected() ? "Enabled" : "Disabled"));
   }
 
   /**
@@ -103,9 +98,7 @@ public class MainWindowController {
     model.saveToFile(selectedFile);
   }
 
-  /**
-   * Show the file picker to select data file location
-   */
+  /** Show the file picker to select data file location */
   @FXML
   public void onSelectFile() {
     FileChooser fileChooser = new FileChooser();
@@ -116,9 +109,7 @@ public class MainWindowController {
     }
   }
 
-  /**
-   * Start/Stop button handler. Starts the crawler and updates the GUI
-   */
+  /** Start/Stop button handler. Starts the crawler and updates the GUI */
   public void onRunClicked() {
     if (!isRunning) {
       runButton.setText("Stop");
