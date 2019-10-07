@@ -14,7 +14,7 @@ repositories {
 }
 
 javafx {
-    modules = [ 'javafx.controls', 'javafx.fxml']
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
 dependencies {
@@ -24,12 +24,9 @@ dependencies {
 
 jar {
     manifest {
-        attributes(
-                'Main-Class': 'com.evanbuss.webscraper.Application'
-        )
+        attributes 'Main-Class': 'com.evanbuss.webscraper.Main'
     }
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
-mainClassName = 'com.evanbuss.webscraper.Application'

@@ -12,6 +12,7 @@ public class Application extends javafx.application.Application {
     Parent root = FXMLLoader.load(getClass().getResource("MainWindow.fxml"));
     Scene scene = new Scene(root);
 
+    primaryStage.setTitle("Web Scraper");
     primaryStage.setScene(scene);
     primaryStage.show();
   }
