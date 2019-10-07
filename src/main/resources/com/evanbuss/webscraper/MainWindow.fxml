@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.evanbuss.webscraper.ui.MainWindowController">
+    <VBox prefHeight="400.0" prefWidth="600.0">
+        <GridPane alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="221.0" prefWidth="600.0">
+            <columnConstraints>
+                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="193.0" minWidth="10.0"
+                                   prefWidth="137.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="314.0" minWidth="10.0" prefWidth="263.0"/>
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <Label text="Starting URL"/>
+            <Label text="Workers" GridPane.rowIndex="1"/>
+            <Label text="Maximum Depth" GridPane.rowIndex="2"/>
+            <Label text="Timeout (seconds)" GridPane.rowIndex="3"/>
+            <Label layoutX="10.0" layoutY="203.0" text="Request Delay (ms)" GridPane.rowIndex="4"/>
+            <Button fx:id="runButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                    onMouseClicked="#onRunClicked" text="Start" GridPane.columnIndex="2">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </Button>
+            <TextField fx:id="urlField" GridPane.columnIndex="1">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </TextField>
+            <TextField fx:id="workersField" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </TextField>
+            <TextField fx:id="depthField" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </TextField>
+            <CheckBox fx:id="depthEnabledCB" mnemonicParsing="false" text="Disabled" GridPane.columnIndex="2"
+                      GridPane.rowIndex="2"/>
+
+            <TextField fx:id="timeoutField" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </TextField>
+            <CheckBox fx:id="timeoutEnabledCB" mnemonicParsing="false" text="Disabled" GridPane.columnIndex="2"
+                      GridPane.rowIndex="3"/>
+            <TextField fx:id="requestField" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </TextField>
+            <CheckBox fx:id="clearQueueCB" mnemonicParsing="false" text="Clear Work Queue Before Stopping"
+                      GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+            <padding>
+                <Insets top="10.0"/>
+            </padding>
+        </GridPane>
+        <Separator prefWidth="200.0"/>
+        <GridPane prefHeight="178.0" prefWidth="600.0">
+            <columnConstraints>
+                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="294.0" minWidth="10.0"
+                                   prefWidth="184.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="444.0" minWidth="10.0" prefWidth="295.0"/>
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="444.0" minWidth="10.0"
+                                   prefWidth="136.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <Label text="Elapsed Time"/>
+            <Label text="Pages Parsed" GridPane.rowIndex="1"/>
+            <Label layoutX="222.0" layoutY="47.0" text="Pages Completed / Queued" GridPane.rowIndex="2"/>
+            <Label fx:id="elapsedLabel" GridPane.columnIndex="1">
+                <padding>
+                    <Insets left="20.0"/>
+                </padding>
+            </Label>
+            <Label fx:id="parsedLabel" layoutX="195.0" layoutY="17.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <padding>
+                    <Insets left="20.0"/>
+                </padding>
+            </Label>
+            <Label fx:id="progressLabel" layoutX="195.0" layoutY="47.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <padding>
+                    <Insets left="20.0"/>
+                </padding>
+            </Label>
+            <Label text="Output File" GridPane.rowIndex="4">
+                <GridPane.margin>
+                    <Insets bottom="20.0"/>
+                </GridPane.margin>
+            </Label>
+            <Button mnemonicParsing="false" onMouseClicked="#dumpDataToFile" text="Dump Data"
+                    GridPane.columnIndex="2" GridPane.rowIndex="4">
+                <GridPane.margin>
+                    <Insets bottom="20.0"/>
+                </GridPane.margin>
+            </Button>
+            <Label fx:id="fileLabel" layoutX="146.0" layoutY="157.0" maxHeight="1.7976931348623157E308"
+                   minHeight="-Infinity" onMouseClicked="#onSelectFile" prefHeight="39.0" prefWidth="276.0"
+                   text="Click to select file" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <padding>
+                    <Insets left="20.0" right="20.0"/>
+                </padding>
+                <GridPane.margin>
+                    <Insets bottom="20.0"/>
+                </GridPane.margin>
+            </Label>
+            <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="3"/>
+        </GridPane>
+    </VBox>
+</AnchorPane>

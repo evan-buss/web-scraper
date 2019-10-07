@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
 group 'com.evanbuss'
@@ -9,6 +11,10 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+}
+
+javafx {
+    modules = [ 'javafx.controls', 'javafx.fxml']
 }
 
 dependencies {
@@ -26,3 +32,4 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
+mainClassName = 'com.evanbuss.webscraper.Application'

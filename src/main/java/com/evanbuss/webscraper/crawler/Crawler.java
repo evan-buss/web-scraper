@@ -2,8 +2,8 @@ package com.evanbuss.webscraper.crawler;
 
 import com.evanbuss.webscraper.models.LinkModel;
 import com.evanbuss.webscraper.models.ParsedPagesModel;
+import com.evanbuss.webscraper.ui.CrawlingDoneListener;
 
-import javax.swing.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -19,15 +19,15 @@ public class Crawler implements Runnable {
   private boolean isRunning = true;
   private boolean finishAllJobs;
 
-  private Timer timer;
   private ThreadPoolExecutor threadPool;
   private BlockingQueue<LinkModel> queue = new LinkedBlockingQueue<>();
+
+  private CrawlingDoneListener doneListener;
 
   public static class Builder {
     // Required parameters
     private final String url;
     private final ParsedPagesModel model;
-    private final Timer timer;
 
     // Optional parameters with defaults
     private int numThreads = 5;
@@ -36,10 +36,9 @@ public class Crawler implements Runnable {
     private int maxDepth = -1;
     private boolean finishAllJobs = false;
 
-    public Builder(String url, ParsedPagesModel model, Timer timer) {
+    public Builder(String url, ParsedPagesModel model) {
       this.url = url;
       this.model = model;
-      this.timer = timer;
     }
 
     public Builder finishAllJobs(boolean bool) {
@@ -78,7 +77,6 @@ public class Crawler implements Runnable {
     this.delay = builder.delay;
     this.timeout = builder.timeout;
     this.maxDepth = builder.maxDepth;
-    this.timer = builder.timer;
     this.finishAllJobs = builder.finishAllJobs;
 
     threadPool =
@@ -152,7 +150,8 @@ public class Crawler implements Runnable {
 
     while (threadPool.getTaskCount() != threadPool.getCompletedTaskCount()) {
     }
-    timer.stop();
+
+    doneListener.crawlingDone();
   }
 
   public long[] getStats() {
@@ -161,5 +160,9 @@ public class Crawler implements Runnable {
 
   public void shutdown() {
     isRunning = false;
+  }
+
+  public void setDoneListener(CrawlingDoneListener listener) {
+    doneListener = listener;
   }
 }
