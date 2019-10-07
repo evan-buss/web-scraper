@@ -1,4 +1,4 @@
-package com.evanbuss.webscraper;
+package com.evanbuss.webscraper.ui;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

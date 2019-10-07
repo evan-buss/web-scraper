@@ -30,3 +30,5 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
+
+mainClassName = 'com.evanbuss.webscraper.Main'
