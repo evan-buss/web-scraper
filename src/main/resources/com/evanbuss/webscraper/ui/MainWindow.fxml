@@ -58,7 +58,7 @@
             </TextField>
             <CheckBox fx:id="timeoutEnabledCB" mnemonicParsing="false" text="Disabled" GridPane.columnIndex="2"
                       GridPane.rowIndex="3"/>
-            <TextField fx:id="requestField" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <TextField fx:id="requestField" GridPane.columnIndex="1" GridPane.rowIndex="4" text="1000">
                 <GridPane.margin>
                     <Insets left="20.0" right="20.0"/>
                 </GridPane.margin>

@@ -112,6 +112,7 @@ public class MainWindowController {
   /** Start/Stop button handler. Starts the crawler and updates the GUI */
   public void onRunClicked() {
     if (!isRunning) {
+      model.clear();
       runButton.setText("Stop");
       // Ensure valid URL
       try {

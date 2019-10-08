@@ -83,7 +83,7 @@ public class Crawler implements Runnable {
         new ThreadPoolExecutor(
             builder.numThreads,
             builder.numThreads,
-            100,
+            4,
             TimeUnit.SECONDS,
             new LinkedBlockingQueue<>());
   }
@@ -91,13 +91,19 @@ public class Crawler implements Runnable {
   @Override
   public void run() {
     long startTime = System.currentTimeMillis();
-    queue.offer(new LinkModel(url, 1));
 
-    // @FUTURE: come up with better way to parse the data. Not sure if the current thread logic is
-    // good or even working
-    LinkModel link;
+    LinkModel linkModel = new LinkModel(url, 1);
+    threadPool.execute(new ScrapingThread(linkModel, model, threadPool, delay, maxDepth));
+
+    int idleCounter = 0;
+
     while (isRunning) {
       // Timeout is set and current time exceeds the timeout
+      try {
+        Thread.sleep(delay);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
       if (timeout != -1) {
         if (((System.currentTimeMillis() - startTime) / 1000F) > timeout) {
           System.out.println("OUT OF TIME");
@@ -105,37 +111,32 @@ public class Crawler implements Runnable {
         }
       }
 
-      try {
-        // Wait 4 seconds
-        link = queue.poll(4, TimeUnit.SECONDS);
+      // Keep track of the number of times we do nothing
+      if (threadPool.getCompletedTaskCount() == threadPool.getTaskCount()) {
+        idleCounter++;
+      }
 
-        if (link == null) {
-          System.out.println("4 Second Timeout");
-          break;
-        }
-
-        if (link.getDepth() <= maxDepth || maxDepth == -1) {
-          System.out.println(queue);
-          threadPool.execute(new ScrapingThread(link, model, queue, delay));
-        } else if (link.getDepth() > maxDepth) {
-          System.out.println("Over max depth");
-          break;
-        }
-      } catch (InterruptedException e) {
-        e.printStackTrace();
+      // We effectively have a 4 second "timeout" period of no work being done before exiting
+      if (idleCounter > 4) {
+        System.out.println("Idle timeout");
+        isRunning = false;
       }
     }
 
     System.out.println("Done Parsing");
     if (finishAllJobs) {
+      System.out.println("soft shutdown");
       threadPool.shutdown();
     } else {
+      System.out.println("hard shutdown");
       threadPool.shutdownNow();
     }
 
-    while (threadPool.getTaskCount() != threadPool.getCompletedTaskCount()) {
+    // FIXME: Figure out the best way to wait until the queue is completely shut down
+    //while (threadPool.getTaskCount() != threadPool.getCompletedTaskCount()) {}
+    //System.out.println("Completely shutdown?");
+    while (threadPool.isTerminating()) {
     }
-
     doneListener.crawlingDone();
   }
 
