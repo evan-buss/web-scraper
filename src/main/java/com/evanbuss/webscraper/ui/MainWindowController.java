@@ -6,48 +6,34 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.input.InputMethodEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 public class MainWindowController {
 
-  @FXML
-  private AnchorPane rootPane;
-  @FXML
-  private Button runButton;
-  @FXML
-  private TextField urlField;
-  @FXML
-  private TextField workersField;
-  @FXML
-  private TextField depthField;
-  @FXML
-  private TextField timeoutField;
-  @FXML
-  private TextField requestField;
-  @FXML
-  private CheckBox clearQueueCB;
-  @FXML
-  private CheckBox depthEnabledCB;
-  @FXML
-  private CheckBox timeoutEnabledCB;
-  @FXML
-  private Label elapsedLabel;
-  @FXML
-  private Label parsedLabel;
-  @FXML
-  private Label progressLabel;
-  @FXML
-  private Label fileLabel;
+  @FXML private TextArea siteDataTextArea;
+  @FXML private AnchorPane rootPane;
+  @FXML private Button runButton;
+  @FXML private TextField urlField;
+  @FXML private TextField workersField;
+  @FXML private TextField depthField;
+  @FXML private TextField timeoutField;
+  @FXML private TextField requestField;
+  @FXML private CheckBox clearQueueCB;
+  @FXML private CheckBox depthEnabledCB;
+  @FXML private CheckBox timeoutEnabledCB;
+  @FXML private Label elapsedLabel;
+  @FXML private Label parsedLabel;
+  @FXML private Label progressLabel;
+  @FXML private Label fileLabel;
 
   private ParsedPagesModel model;
   private File selectedFile;
@@ -88,11 +74,18 @@ public class MainWindowController {
         .addListener(
             observable ->
                 timeoutEnabledCB.setText(timeoutEnabledCB.isSelected() ? "Enabled" : "Disabled"));
+
+    urlField
+        .focusedProperty()
+        .addListener(
+            (obs, oldVal, newVal) -> {
+              if (!newVal) {
+                loadSiteData();
+              }
+            });
   }
 
-  /**
-   * Save the parsed website to the selected file
-   */
+  /** Save the parsed website to the selected file */
   @FXML
   public void dumpDataToFile() {
     model.saveToFile(selectedFile);
@@ -161,5 +154,14 @@ public class MainWindowController {
     }
 
     return builder.build();
+  }
+
+  private void loadSiteData() {
+    try {
+      URL url = new URL(urlField.getText());
+      siteDataTextArea.setText(new String(url.openStream().readAllBytes()));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }
