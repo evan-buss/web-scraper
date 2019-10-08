@@ -1,8 +1,0 @@
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.AnchorPane?>
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/11.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.evanbuss.webscraper.ui.controllers.HTMLTabController">
-    <TextArea fx:id="siteDataTextArea" prefHeight="400" prefWidth="600.0"
-              promptText="Initial Site Preview" wrapText="true" editable="false"/>
-</AnchorPane>
