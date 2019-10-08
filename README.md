@@ -1,8 +1,10 @@
-# web-scraper-swing
+# java-web-scraper
 Breadth first search web scraper written in Java using the Swing GUI toolkit.
 
-## Swing UI
+## JavaFX GUI
+![screenshot](https://github.com/evan-buss/web-scraper-swing/tree/javafx-rewrite/screenshot)
+
+## Old Swing GUI
 ![screenshot](https://raw.githubusercontent.com/evan-buss/web-scraper-swing/master/screenshot/main.png)
 
-## JavaFX Rewrite
-![screenshot](https://github.com/evan-buss/web-scraper-swing/tree/javafx-rewrite/screenshot)
+
