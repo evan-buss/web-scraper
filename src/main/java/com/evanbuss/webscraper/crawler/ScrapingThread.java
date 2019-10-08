@@ -8,27 +8,32 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class ScrapingThread implements Runnable {
 
   private LinkModel linkModel;
-  private long sleepTime;
+  private long delay;
   private ParsedPagesModel model;
-  private BlockingQueue<LinkModel> queue;
+  private ThreadPoolExecutor threadPool;
+  private int maxDepth;
 
   ScrapingThread(
-      LinkModel linkModel, ParsedPagesModel model, BlockingQueue<LinkModel> queue, long sleepTime) {
+      LinkModel linkModel,
+      ParsedPagesModel model,
+      ThreadPoolExecutor threadPool,
+      long delay,
+      int maxDepth) {
     this.linkModel = linkModel;
     this.model = model;
-    this.queue = queue;
-    this.sleepTime = sleepTime;
+    this.threadPool = threadPool;
+    this.delay = delay;
   }
 
   @Override
   public void run() {
     try {
-      Thread.sleep(sleepTime);
+      Thread.sleep(delay);
 
       Connection.Response response =
           Jsoup.connect(linkModel.getUrl())
@@ -36,8 +41,10 @@ public class ScrapingThread implements Runnable {
                   "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:69.0) Gecko/20100101 Firefox/69.0")
               .execute();
 
+      // End thread early if bad http response
       if (response.statusCode() != 200) {
         System.out.println(response.statusCode());
+        return;
       }
 
       // System.out.println("NEW THREAD: " + linkModel.getUrl() + " - " + response.statusCode());
@@ -52,16 +59,14 @@ public class ScrapingThread implements Runnable {
             String link = element.attr("abs:href");
             LinkModel found = new LinkModel(link, linkModel.getDepth() + 1);
             // If the found link hasn't been visited before, add it to the parse queue.
-            if (!model.contains(found) && !queue.contains(found)) {
-              queue.offer(found);
+            // if (!model.contains(found) && (found.getDepth() <= maxDepth || maxDepth == -1)) {
+            if (!model.contains(found) && !threadPool.isShutdown() && !threadPool.isTerminating()) {
+              threadPool.execute(new ScrapingThread(found, model, threadPool, delay, maxDepth));
             }
           });
-    } catch (IOException e) {
-      // System.out.println("Error opening connection" + e);
-    } catch (InterruptedException e) {
-      // e.printStackTrace();
-    } catch (IllegalArgumentException e) {
-      //
+    } catch (IOException | IllegalArgumentException | InterruptedException e) {
+      // This is expected, the service may be shutdown and cancel in-progress threads.
+      // System.out.println("Something went wrong in the ScrapingThread");
     }
   }
 }

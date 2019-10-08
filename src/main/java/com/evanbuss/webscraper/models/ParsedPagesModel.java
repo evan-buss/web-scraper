@@ -43,4 +43,9 @@ public class ParsedPagesModel {
 
     writerThread.start();
   }
+
+  public void clear() {
+    data.clear();
+    counter = 0;
+  }
 }

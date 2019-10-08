@@ -8,3 +8,6 @@ https://evanbuss.com
 
 in the console.  I think this may be due to multiple threads popping the top at the same time?? I need to learn more
 about the blockedqueue. I may switch my design so that each thread is responsible for loop and handling it's own shit
+
+TODO:
+    May be able to get away with adding data to executor queue instead of maintaining 2 queues.

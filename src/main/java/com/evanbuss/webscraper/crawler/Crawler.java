@@ -2,8 +2,8 @@ package com.evanbuss.webscraper.crawler;
 
 import com.evanbuss.webscraper.models.LinkModel;
 import com.evanbuss.webscraper.models.ParsedPagesModel;
+import com.evanbuss.webscraper.ui.CrawlingDoneListener;
 
-import javax.swing.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -19,15 +19,15 @@ public class Crawler implements Runnable {
   private boolean isRunning = true;
   private boolean finishAllJobs;
 
-  private Timer timer;
   private ThreadPoolExecutor threadPool;
   private BlockingQueue<LinkModel> queue = new LinkedBlockingQueue<>();
+
+  private CrawlingDoneListener doneListener;
 
   public static class Builder {
     // Required parameters
     private final String url;
     private final ParsedPagesModel model;
-    private final Timer timer;
 
     // Optional parameters with defaults
     private int numThreads = 5;
@@ -36,10 +36,9 @@ public class Crawler implements Runnable {
     private int maxDepth = -1;
     private boolean finishAllJobs = false;
 
-    public Builder(String url, ParsedPagesModel model, Timer timer) {
+    public Builder(String url, ParsedPagesModel model) {
       this.url = url;
       this.model = model;
-      this.timer = timer;
     }
 
     public Builder finishAllJobs(boolean bool) {
@@ -78,16 +77,79 @@ public class Crawler implements Runnable {
     this.delay = builder.delay;
     this.timeout = builder.timeout;
     this.maxDepth = builder.maxDepth;
-    this.timer = builder.timer;
     this.finishAllJobs = builder.finishAllJobs;
 
     threadPool =
         new ThreadPoolExecutor(
             builder.numThreads,
             builder.numThreads,
-            100,
+            4,
             TimeUnit.SECONDS,
             new LinkedBlockingQueue<>());
+  }
+
+  @Override
+  public void run() {
+    long startTime = System.currentTimeMillis();
+
+    LinkModel linkModel = new LinkModel(url, 1);
+    threadPool.execute(new ScrapingThread(linkModel, model, threadPool, delay, maxDepth));
+
+    int idleCounter = 0;
+
+    while (isRunning) {
+      // Timeout is set and current time exceeds the timeout
+      try {
+        Thread.sleep(delay);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      if (timeout != -1) {
+        if (((System.currentTimeMillis() - startTime) / 1000F) > timeout) {
+          System.out.println("OUT OF TIME");
+          break;
+        }
+      }
+
+      // Keep track of the number of times we do nothing
+      if (threadPool.getCompletedTaskCount() == threadPool.getTaskCount()) {
+        idleCounter++;
+      }
+
+      // We effectively have a 4 second "timeout" period of no work being done before exiting
+      if (idleCounter > 4) {
+        System.out.println("Idle timeout");
+        isRunning = false;
+      }
+    }
+
+    System.out.println("Done Parsing");
+    if (finishAllJobs) {
+      System.out.println("soft shutdown");
+      threadPool.shutdown();
+    } else {
+      System.out.println("hard shutdown");
+      threadPool.shutdownNow();
+    }
+
+    // FIXME: Figure out the best way to wait until the queue is completely shut down
+    //while (threadPool.getTaskCount() != threadPool.getCompletedTaskCount()) {}
+    //System.out.println("Completely shutdown?");
+    while (threadPool.isTerminating()) {
+    }
+    doneListener.crawlingDone();
+  }
+
+  public long[] getStats() {
+    return new long[]{threadPool.getCompletedTaskCount(), threadPool.getTaskCount()};
+  }
+
+  public void shutdown() {
+    isRunning = false;
+  }
+
+  public void setDoneListener(CrawlingDoneListener listener) {
+    doneListener = listener;
   }
 
   @Override
@@ -103,63 +165,5 @@ public class Crawler implements Runnable {
         + ", maxDepth="
         + maxDepth
         + '}';
-  }
-
-  @Override
-  public void run() {
-    long startTime = System.currentTimeMillis();
-    queue.offer(new LinkModel(url, 1));
-
-    // @FUTURE: come up with better way to parse the data. Not sure if the current thread logic is
-    // good or even working
-    LinkModel link;
-    while (isRunning) {
-      // Timeout is set and current time exceeds the timeout
-      if (timeout != -1) {
-        if (((System.currentTimeMillis() - startTime) / 1000F) > timeout) {
-          System.out.println("OUT OF TIME");
-          break;
-        }
-      }
-
-      try {
-        // Wait 4 seconds
-        link = queue.poll(4, TimeUnit.SECONDS);
-
-        if (link == null) {
-          System.out.println("4 Second Timeout");
-          break;
-        }
-
-        if (link.getDepth() <= maxDepth || maxDepth == -1) {
-          System.out.println(queue);
-          threadPool.execute(new ScrapingThread(link, model, queue, delay));
-        } else if (link.getDepth() > maxDepth) {
-          System.out.println("Over max depth");
-          break;
-        }
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
-
-    System.out.println("Done Parsing");
-    if (finishAllJobs) {
-      threadPool.shutdown();
-    } else {
-      threadPool.shutdownNow();
-    }
-
-    while (threadPool.getTaskCount() != threadPool.getCompletedTaskCount()) {
-    }
-    timer.stop();
-  }
-
-  public long[] getStats() {
-    return new long[]{threadPool.getCompletedTaskCount(), threadPool.getTaskCount()};
-  }
-
-  public void shutdown() {
-    isRunning = false;
   }
 }
