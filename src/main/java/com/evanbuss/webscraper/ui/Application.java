@@ -9,7 +9,7 @@ public class Application extends javafx.application.Application {
 
   @Override
   public void start(Stage primaryStage) throws Exception {
-    Parent root = FXMLLoader.load(getClass().getResource("MainWindow.fxml"));
+    Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
     Scene scene = new Scene(root);
 
     primaryStage.setTitle("Web Scraper");

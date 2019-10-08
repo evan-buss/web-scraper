@@ -1,4 +1,4 @@
-package com.evanbuss.webscraper.ui;
+package com.evanbuss.webscraper.ui.controllers;
 
 import com.evanbuss.webscraper.crawler.Crawler;
 import com.evanbuss.webscraper.models.ParsedPagesModel;
@@ -11,13 +11,15 @@ import javafx.scene.input.InputMethodEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
-public class MainWindowController {
+public class MainController {
 
   @FXML private TextArea siteDataTextArea;
   @FXML private AnchorPane rootPane;
@@ -42,7 +44,7 @@ public class MainWindowController {
   private Timeline timeline;
   private long currentTime;
 
-  public MainWindowController() {
+  public MainController() {
     model = new ParsedPagesModel();
     timeline =
         new Timeline(
@@ -158,10 +160,14 @@ public class MainWindowController {
 
   private void loadSiteData() {
     try {
-      URL url = new URL(urlField.getText());
-      siteDataTextArea.setText(new String(url.openStream().readAllBytes()));
+      Document document = Jsoup.connect(urlField.getText()).get();
+      document.getElementsByTag("script").remove();
+
+      siteDataTextArea.setText(document.toString());
+
     } catch (IOException e) {
       e.printStackTrace();
+      System.out.println("Invalid URL!!");
     }
   }
 }

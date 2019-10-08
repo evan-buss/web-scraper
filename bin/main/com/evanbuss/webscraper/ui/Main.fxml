@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.evanbuss.webscraper.ui.MainWindowController">
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.evanbuss.webscraper.ui.controllers.MainController">
    <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
      <tabs>
        <Tab text="Crawler Settings">
@@ -149,8 +149,13 @@
                   <children>
                      <VBox>
                         <children>
-                           <HBox prefHeight="43.0" prefWidth="600.0">
+                           <HBox alignment="CENTER" prefHeight="43.0" prefWidth="600.0">
                               <children>
+                                 <Label text="CSS Selector">
+                                    <HBox.margin>
+                                       <Insets right="20.0" />
+                                    </HBox.margin>
+                                 </Label>
                                  <TextField />
                               </children>
                            </HBox>
