@@ -21,6 +21,36 @@ public class SelectorsTabController {
 
   @FXML
   public void initialize() {
+    selectorTA.setOnKeyTyped(
+        event -> {
+          // Replace default 8 char tabs with 2 chars
+          if (event.getCharacter().equals("\t")) {
+            String text = selectorTA.getText();
+            int replaceIndex = selectorTA.getCaretPosition() - 1;
+            selectorTA.setText(
+                text.substring(0, replaceIndex) + "  " + text.substring(replaceIndex + 1));
+            selectorTA.positionCaret(replaceIndex + 2);
+          }
+          // Automatically append a ] when [ is typed
+          else if (event.getCharacter().equals("[") || event.getCharacter().equals("{")) {
+            String pairChar = "";
+            switch (event.getCharacter()) {
+              case "[":
+                pairChar = "]";
+                break;
+              case "{":
+                pairChar = "}";
+                break;
+            }
+            String text = selectorTA.getText();
+            if (selectorTA.getCaretPosition() == selectorTA.getText().length()) {
+              text += " ";
+            }
+            int index = selectorTA.getCaretPosition();
+            selectorTA.setText(text.substring(0, index) + pairChar + text.substring(index));
+            selectorTA.positionCaret(index);
+          }
+        });
   }
 
   void inject(MainController mainController) {
@@ -43,7 +73,8 @@ public class SelectorsTabController {
       queryModel = gson.fromJson(selectorTA.getText(), QueryModel.class);
       ResultModel result = new ResultModel();
       if (mainController.getHTML().length() == 0) {
-        resultsTA.setText("Set a \"Base URL\" in the Settings tab to validate your queries against.");
+        resultsTA.setText(
+            "Set a \"Base URL\" in the Settings tab to validate your queries against.");
         return;
       }
 

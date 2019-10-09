@@ -88,29 +88,25 @@ public class SettingsTabController {
 
     depthEnabledCB
         .selectedProperty()
-        .addListener((obs, oldVal, newVal) -> depthField.setDisable(!newVal));
+        .addListener(
+            (obs, oldVal, newVal) -> {
+              depthField.setDisable(!newVal);
+              depthEnabledCB.setText(depthEnabledCB.isSelected() ? "Enabled" : "Disabled");
+            });
     depthField.setValueFactory(
         new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 5));
 
     timeoutEnabledCB
         .selectedProperty()
-        .addListener((obs, oldVal, newVal) -> timeoutField.setDisable(!newVal));
+        .addListener(
+            (obs, oldVal, newVal) -> {
+              timeoutField.setDisable(!newVal);
+              timeoutEnabledCB.setText(timeoutEnabledCB.isSelected() ? "Enabled" : "Disabled");
+            });
     timeoutField.setValueFactory(
         new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 10));
 
     enableProgress(false);
-
-    depthEnabledCB
-        .selectedProperty()
-        .addListener(
-            observable ->
-                depthEnabledCB.setText(depthEnabledCB.isSelected() ? "Enabled" : "Disabled"));
-
-    timeoutEnabledCB
-        .selectedProperty()
-        .addListener(
-            observable ->
-                timeoutEnabledCB.setText(timeoutEnabledCB.isSelected() ? "Enabled" : "Disabled"));
 
     urlField
         .focusedProperty()
@@ -128,11 +124,11 @@ public class SettingsTabController {
     if (!isRunning) {
       model.clear();
       runButton.setText("Stop");
-      // Ensure valid URL
+
       try {
+        // Ensure valid URL
         new URL(verifyURL(urlField.getText()));
       } catch (MalformedURLException ex) {
-        System.out.println("bad url");
         return;
       }
 
@@ -208,8 +204,6 @@ public class SettingsTabController {
                 urlField.getStyleClass().removeIf(s -> s.equals("text-area-bad-input"));
 
               } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Invalid URL!!");
                 urlField.getStyleClass().add("text-area-bad-input");
               } finally {
                 enableProgress(false);
@@ -218,6 +212,11 @@ public class SettingsTabController {
     thread.start();
   }
 
+  /**
+   * Show or hide the progress indicator when loading the HTML content of a URL
+   *
+   * @param enable - true if progress indicator should be visible
+   */
   private void enableProgress(boolean enable) {
     if (enable) {
       loadingSpinner.setVisible(true);
@@ -228,6 +227,14 @@ public class SettingsTabController {
     }
   }
 
+  /**
+   * Check if the given url has the proper https or http prefix. If not return the url with the
+   * prefix prepended
+   *
+   * @param url - url to check if protocol is present
+   * @return the url unchanged if correct protocol or the url with the correct protocol if it was
+   *     missing
+   */
   private String verifyURL(String url) {
     if (!url.contains("https://") || !url.contains("http://")) {
       return "https://" + url;
