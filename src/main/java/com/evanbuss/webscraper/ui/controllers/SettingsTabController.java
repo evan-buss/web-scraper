@@ -6,10 +6,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
@@ -23,21 +20,23 @@ import java.net.URL;
 
 public class SettingsTabController {
   @FXML
+  private ProgressIndicator loadingSpinner;
+  @FXML
   private Button runButton;
   @FXML
   private TextField urlField;
   @FXML
-  private TextField workersField;
+  private Spinner<Integer> workersField;
   @FXML
-  private TextField depthField;
+  private Spinner<Integer> depthField;
   @FXML
   private CheckBox depthEnabledCB;
   @FXML
-  private TextField timeoutField;
+  private Spinner<Integer> timeoutField;
   @FXML
   private CheckBox timeoutEnabledCB;
   @FXML
-  private TextField requestField;
+  private Spinner<Integer> requestSpinner;
   @FXML
   private CheckBox clearQueueCB;
   @FXML
@@ -78,7 +77,28 @@ public class SettingsTabController {
 
   @FXML
   public void initialize() {
-    workersField.setText(String.valueOf(Runtime.getRuntime().availableProcessors()));
+    requestSpinner.setValueFactory(
+        new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 5000, 1000));
+
+    workersField.setValueFactory(
+        new SpinnerValueFactory.IntegerSpinnerValueFactory(
+            1,
+            2 * Runtime.getRuntime().availableProcessors(),
+            Runtime.getRuntime().availableProcessors()));
+
+    depthEnabledCB
+        .selectedProperty()
+        .addListener((obs, oldVal, newVal) -> depthField.setDisable(!newVal));
+    depthField.setValueFactory(
+        new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 5));
+
+    timeoutEnabledCB
+        .selectedProperty()
+        .addListener((obs, oldVal, newVal) -> timeoutField.setDisable(!newVal));
+    timeoutField.setValueFactory(
+        new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 10));
+
+    enableProgress(false);
 
     depthEnabledCB
         .selectedProperty()
@@ -110,7 +130,7 @@ public class SettingsTabController {
       runButton.setText("Stop");
       // Ensure valid URL
       try {
-        new URL(urlField.getText());
+        new URL(verifyURL(urlField.getText()));
       } catch (MalformedURLException ex) {
         System.out.println("bad url");
         return;
@@ -158,17 +178,17 @@ public class SettingsTabController {
   private Crawler buildCrawler() {
     // Build a crawler with the desired conditions
     Crawler.Builder builder =
-        new Crawler.Builder(urlField.getText(), model)
-            .numThreads(Integer.parseInt(workersField.getText()))
+        new Crawler.Builder(verifyURL(urlField.getText()), model)
+            .numThreads(workersField.getValue())
             .finishAllJobs(clearQueueCB.isSelected())
-            .delay(Integer.parseInt(requestField.getText()));
+            .delay(requestSpinner.getValue());
 
     if (depthEnabledCB.isSelected()) {
-      builder = builder.depth(Integer.parseInt(depthField.getText()));
+      builder = builder.depth(depthField.getValue());
     }
 
     if (timeoutEnabledCB.isSelected()) {
-      builder = builder.timeout(Integer.parseInt(timeoutField.getText()));
+      builder = builder.timeout(timeoutField.getValue());
     }
 
     return builder.build();
@@ -176,16 +196,41 @@ public class SettingsTabController {
 
   /** Load and parse the site's HTML into the HTML viewer tab's textfield. */
   private void loadSiteData() {
-    try {
-      Document document = Jsoup.connect(urlField.getText()).get();
-      document.getElementsByTag("script").remove();
+    enableProgress(true);
+    Thread thread =
+        new Thread(
+            () -> {
+              try {
+                Document document = Jsoup.connect(verifyURL(urlField.getText())).get();
+                document.getElementsByTag("script").remove();
 
-      mainController.updateHTML(document.toString());
+                mainController.updateHTML(document.toString());
 
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.out.println("Invalid URL!!");
+              } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Invalid URL!!");
+              } finally {
+                enableProgress(false);
+              }
+            });
+    thread.start();
+  }
+
+  private void enableProgress(boolean enable) {
+    if (enable) {
+      loadingSpinner.setVisible(true);
+      loadingSpinner.setManaged(true);
+    } else {
+      loadingSpinner.setVisible(false);
+      loadingSpinner.setManaged(false);
     }
+  }
+
+  private String verifyURL(String url) {
+    if (!url.contains("https://") || !url.contains("http://")) {
+      return "https://" + url;
+    }
+    return url;
   }
 
   void inject(MainController controller) {

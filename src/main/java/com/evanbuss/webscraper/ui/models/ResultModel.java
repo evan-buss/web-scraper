@@ -24,11 +24,11 @@ public class ResultModel {
   @ToString
   public static class ResultPair {
     public String name;
-    public String query;
+    public String value;
 
-    public ResultPair(String name, String query) {
+    public ResultPair(String name, String value) {
       this.name = name;
-      this.query = query;
+      this.value = value;
     }
   }
 }

@@ -3,16 +3,16 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane fx:id="rootPane" minHeight="0.0" minWidth="0.0" prefHeight="400.0" prefWidth="600.0"
-            xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane fx:id="rootPane" minHeight="0.0" minWidth="0.0" xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.evanbuss.webscraper.ui.controllers.SettingsTabController">
-    <VBox prefHeight="400.0" prefWidth="600.0">
+    <VBox prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <GridPane alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="221.0" prefWidth="600.0">
             <columnConstraints>
-                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="193.0" minWidth="10.0"
-                                   prefWidth="137.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="314.0" minWidth="10.0" prefWidth="263.0"/>
-                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES"/>
+                <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0"/>
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES"/>
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
@@ -36,40 +36,51 @@
                     <Insets left="20.0" right="20.0"/>
                 </GridPane.margin>
             </Button>
-            <TextField fx:id="urlField" GridPane.columnIndex="1">
-                <GridPane.margin>
-                    <Insets left="20.0" right="20.0"/>
-                </GridPane.margin>
-            </TextField>
-            <TextField fx:id="workersField" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                <GridPane.margin>
-                    <Insets left="20.0" right="20.0"/>
-                </GridPane.margin>
-            </TextField>
-            <TextField fx:id="depthField" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                <GridPane.margin>
-                    <Insets left="20.0" right="20.0"/>
-                </GridPane.margin>
-            </TextField>
+            <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1">
+                <TextField fx:id="urlField" HBox.hgrow="ALWAYS">
+                    <HBox.margin>
+                        <Insets left="20.0" right="20.0"/>
+                    </HBox.margin>
+                </TextField>
+                <ProgressIndicator fx:id="loadingSpinner" prefHeight="20.0" prefWidth="20.0">
+                    <HBox.margin>
+                        <Insets right="20.0"/>
+                    </HBox.margin>
+                </ProgressIndicator>
+            </HBox>
             <CheckBox fx:id="depthEnabledCB" mnemonicParsing="false" text="Disabled" GridPane.columnIndex="2"
                       GridPane.rowIndex="2"/>
-            <TextField fx:id="timeoutField" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                <GridPane.margin>
-                    <Insets left="20.0" right="20.0"/>
-                </GridPane.margin>
-            </TextField>
             <CheckBox fx:id="timeoutEnabledCB" mnemonicParsing="false" text="Disabled" GridPane.columnIndex="2"
                       GridPane.rowIndex="3"/>
-            <TextField fx:id="requestField" text="1000" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <CheckBox fx:id="clearQueueCB" mnemonicParsing="false" text="Clear Work Queue Before Stopping"
+                      GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+            <Spinner fx:id="requestSpinner" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1"
+                     GridPane.rowIndex="4">
                 <GridPane.margin>
                     <Insets left="20.0" right="20.0"/>
                 </GridPane.margin>
-            </TextField>
-            <CheckBox fx:id="clearQueueCB" mnemonicParsing="false" text="Clear Work Queue Before Stopping"
-                      GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+            </Spinner>
+            <Spinner fx:id="timeoutField" disable="true" editable="true" layoutX="200.0" layoutY="166.0"
+                     maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </Spinner>
+            <Spinner fx:id="depthField" disable="true" editable="true" layoutX="200.0" layoutY="131.0"
+                     maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </Spinner>
+            <Spinner fx:id="workersField" editable="true" layoutX="200.0" layoutY="96.0"
+                     maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </Spinner>
         </GridPane>
         <Separator prefWidth="200.0"/>
-        <GridPane prefHeight="143.0" prefWidth="582.0">
+        <GridPane prefHeight="143.0" prefWidth="582.0" VBox.vgrow="ALWAYS">
             <columnConstraints>
                 <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="294.0" minWidth="10.0"
                                    prefWidth="184.0"/>

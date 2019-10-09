@@ -1,15 +1,7 @@
 Bugs:
     - Depth limit doesn't work with current implementation
+    - Fix repeat runs capability
+      - Stopping and starting a new run is unreliable and buggy
 
 Working:
-    Make UI responsive.
-        -Right now expanding the window just shows whitespace...
-
-
-    Create text extraction tab
-    Two Panes
-    Query JSON | Results JSON
-               |
-               |
-
-    The results JSON pane is based on the queries from the given BASE URL in the HTML TAB
+   Pass the user's QueryModel to the threads that request it

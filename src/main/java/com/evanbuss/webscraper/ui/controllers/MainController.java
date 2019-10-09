@@ -20,6 +20,7 @@ public class MainController {
 
   void updateHTML(String htmlContent) {
     htmlTabController.siteDataTextArea.setText(htmlContent);
+    htmlTabController.siteDataTextArea.setDisable(false);
   }
 
   String getHTML() {
