@@ -13,7 +13,7 @@ public class MainController {
   private HTMLTabController htmlTabController;
   @FXML
   private SelectorsTabController selectorsTabController;
-  private String queryJSON;
+  private String baseURI;
 
   @FXML
   public void initialize() {
@@ -30,16 +30,20 @@ public class MainController {
     return htmlTabController.getHTML();
   }
 
-  void setQueryJSON(String text) {
-    queryJSON = text;
-  }
-
   String getQueryJSON() {
-    return queryJSON;
+    return selectorsTabController.getJSON();
   }
 
   void setQueryError() {
     tabPane.getSelectionModel().select(2);
     selectorsTabController.setResultText();
+  }
+
+  void setBaseURI(String baseURI) {
+    this.baseURI = baseURI;
+  }
+
+  String getBaseURI() {
+    return baseURI;
   }
 }

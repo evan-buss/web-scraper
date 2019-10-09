@@ -11,12 +11,12 @@
               AnchorPane.topAnchor="0.0">
             <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="35.0" spacing="50.0">
                 <Label text="Selector JSON"/>
-                <Button mnemonicParsing="false" onMouseClicked="#parseSelectors"
-                        style="-fx-background-radius: 20;" text="Parse Selectors"/>
+                <Button mnemonicParsing="false" onMouseClicked="#parseSelectors" style="-fx-background-radius: 20;"
+                        text="Parse Selectors"/>
             </HBox>
             <TextArea fx:id="selectorTA" prefHeight="369.0" prefWidth="295.0"
-                      promptText="Enter your JSON selection object" styleClass="json-editor"
-                      text="{&#10;  &quot;data&quot;: [&#10;    {&#10;      &quot;name&quot;: &quot;page title&quot;,&#10;      &quot;query&quot;: &quot;title&quot;,&#10;      &quot;type&quot;: &quot;TEXT&quot;&#10;    }&#10;  ],&#10;  &quot;links&quot;: [&#10;    &quot;a&quot;&#10;  ]&#10;}&#10;"
+                      promptText="Enter your JSON selection object" styleClass="monospace-text"
+                      text="{&#10;  &quot;data&quot;: [&#10;    {&#10;      &quot;name&quot;: &quot;page title&quot;,&#10;      &quot;query&quot;: &quot;head &gt; title&quot;,&#10;      &quot;type&quot;: &quot;TEXT&quot;&#10;    }&#10;  ],&#10;  &quot;links&quot;: [&#10;    &quot;a&quot;&#10;  ]&#10;}&#10;"
                       wrapText="true" VBox.vgrow="ALWAYS"/>
         </VBox>
     </AnchorPane>
@@ -26,7 +26,8 @@
             <HBox alignment="CENTER" prefHeight="35.0">
                 <Label text="Results JSON"/>
             </HBox>
-            <TextArea fx:id="resultsTA" editable="false" styleClass="json-editor" wrapText="true" VBox.vgrow="ALWAYS"/>
+            <TextArea fx:id="resultsTA" editable="false" styleClass="monospace-text" wrapText="true"
+                      VBox.vgrow="ALWAYS"/>
         </VBox>
     </AnchorPane>
 </SplitPane>

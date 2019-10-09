@@ -34,16 +34,12 @@ class ScrapingThread implements Runnable {
     try {
       Thread.sleep(delay);
 
-      String html = ParseUtils.urlToHTML(url);
+      String[] result = ParseUtils.urlToHTML(url);
 
-      ResultModel resultModel = ParseUtils.queryToResult(query, html);
+      ResultModel resultModel = ParseUtils.queryToResult(query, result[0], result[1]);
 
       // Add all visited base links to the model
       model.addItem(url, resultModel);
-
-      // TODO: Do something with the data retrieved from the HTML
-      resultModel.data.forEach(resultPair -> {
-      });
 
       // For each link found, we need to
       resultModel.links.forEach(
@@ -53,9 +49,8 @@ class ScrapingThread implements Runnable {
             }
           });
     } catch (IOException | IllegalArgumentException | InterruptedException e) {
-      System.out.println("Error parsing HTML or SOMETHING");
+      System.out.println(url + " : " + e.getMessage());
       // This is expected, the service may be shutdown and cancel in-progress threads.
-      // System.out.println("Something went wrong in the ScrapingThread");
     }
   }
 }

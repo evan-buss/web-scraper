@@ -9,7 +9,7 @@
     <TextArea fx:id="siteDataTextArea" disable="true" editable="false" focusTraversable="false" prefHeight="400"
               prefWidth="600.0" promptText="Enter a Base URL to preview the HTML response data." wrapText="true"
               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-              AnchorPane.topAnchor="0.0">
+              AnchorPane.topAnchor="0.0" styleClass="monospace-text">
         <font>
             <Font size="16.0"/>
         </font>

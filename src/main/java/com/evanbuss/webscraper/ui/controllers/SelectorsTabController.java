@@ -6,7 +6,6 @@ import com.evanbuss.webscraper.utils.ParseUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 
-@SuppressWarnings("WeakerAccess")
 public class SelectorsTabController {
 
   @FXML
@@ -17,15 +16,6 @@ public class SelectorsTabController {
 
   @FXML
   public void initialize() {
-
-    // Update the app's main state when the focus leaves the text box
-    selectorTA
-        .focusedProperty()
-        .addListener(
-            (obs, oldVal, newVal) -> {
-              if (!newVal) mainController.setQueryJSON(selectorTA.getText());
-            });
-
     selectorTA.setOnKeyTyped(
         event -> {
           // Replace default 8 char tabs with 2 chars
@@ -80,7 +70,9 @@ public class SelectorsTabController {
             "Set a \"Base URL\" in the Settings tab to validate your queries against.");
         return;
       }
-      ResultModel result = ParseUtils.queryToResult(queryModel, mainController.getHTML());
+      ResultModel result =
+          ParseUtils.queryToResult(
+              queryModel, mainController.getHTML(), mainController.getBaseURI());
       String json = ParseUtils.resultToJSON(result);
       resultsTA.setText(json);
     } catch (Exception e) {
@@ -90,5 +82,9 @@ public class SelectorsTabController {
 
   void setResultText() {
     resultsTA.setText("Invalid JSON, please fix it.");
+  }
+
+  String getJSON() {
+    return selectorTA.getText();
   }
 }

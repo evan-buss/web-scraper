@@ -4,7 +4,6 @@ import com.evanbuss.webscraper.crawler.Crawler;
 import com.evanbuss.webscraper.models.ParsedPagesModel;
 import com.evanbuss.webscraper.models.QueryModel;
 import com.evanbuss.webscraper.utils.ParseUtils;
-import com.evanbuss.webscraper.utils.URLUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-@SuppressWarnings("WeakerAccess")
 public class SettingsTabController {
   @FXML
   private ProgressIndicator loadingSpinner;
@@ -138,7 +136,7 @@ public class SettingsTabController {
       try {
         // Ensure valid URL
         if (urlField.getText().length() == 0) throw new MalformedURLException();
-        new URL(URLUtils.verifyURL(urlField.getText()));
+        new URL(urlField.getText());
         setURLError(false);
       } catch (MalformedURLException ex) {
         setURLError(true);
@@ -191,7 +189,7 @@ public class SettingsTabController {
   private Crawler buildCrawler(QueryModel queryModel) {
     // Build a crawler with the desired conditions
     Crawler.Builder builder =
-        new Crawler.Builder(URLUtils.verifyURL(urlField.getText()), model, queryModel)
+        new Crawler.Builder(urlField.getText(), model, queryModel)
             .numThreads(workersField.getValue())
             .finishAllJobs(clearQueueCB.isSelected())
             .delay(requestSpinner.getValue());
@@ -214,7 +212,9 @@ public class SettingsTabController {
         new Thread(
             () -> {
               try {
-                mainController.updateHTML(ParseUtils.urlToHTML(urlField.getText()));
+                String[] html = ParseUtils.urlToHTML(urlField.getText());
+                mainController.updateHTML(html[0]);
+                mainController.setBaseURI(html[1]);
                 setURLError(false);
               } catch (IOException e) {
                 setURLError(true);

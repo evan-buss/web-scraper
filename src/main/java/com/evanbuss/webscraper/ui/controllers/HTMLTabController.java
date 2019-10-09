@@ -3,7 +3,6 @@ package com.evanbuss.webscraper.ui.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 
-@SuppressWarnings("WeakerAccess")
 public class HTMLTabController {
   @FXML
   private TextArea siteDataTextArea;

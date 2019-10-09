@@ -16,10 +16,11 @@ import java.util.List;
 @EqualsAndHashCode
 public class ResultModel {
   public final List<ResultPair> data = new ArrayList<>();
-  public final List<String> links = new ArrayList<>();
+  public final transient List<String> links = new ArrayList<>();
 
   /**
-   * ResultPair represents a single data result. It contains the user's desired variable name and the data itself
+   * ResultPair represents a single data result. It contains the user's desired variable name and
+   * the data itself
    */
   @ToString
   public static class ResultPair {

@@ -14,7 +14,9 @@ import java.io.IOException;
 
 public class ParseUtils {
 
-  private static final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+  private static final Gson gsonPretty =
+      new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+  private static final Gson gson = new Gson();
 
   /**
    * Retrieve the HTML from the website located at URL
@@ -22,11 +24,11 @@ public class ParseUtils {
    * @param url - website to load HTML from
    * @return - HTML string
    * @throws IOException - throws exception if the response code is not 200 or there are problems
-   *                     parsing
+   *     parsing
    */
-  public static String urlToHTML(String url) throws IOException {
+  public static String[] urlToHTML(String url) throws IOException {
     Connection.Response response =
-        Jsoup.connect(URLUtils.verifyURL(url))
+        Jsoup.connect(url)
             .userAgent(
                 "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:69.0) Gecko/20100101 Firefox/69.0")
             .execute();
@@ -36,19 +38,19 @@ public class ParseUtils {
 
     Document document = response.parse();
     document.getElementsByTag("script").remove();
-    return document.toString();
+    return new String[]{document.toString(), document.baseUri()};
   }
 
   /**
    * Convert a page query to a page result using the given HTML string
    *
    * @param queryModel - query to run on each HTML page
-   * @param html       - string of HTML
+   * @param html - string of HTML
    * @return ResultModel containing the parsed data from the HTML
    */
-  public static ResultModel queryToResult(QueryModel queryModel, String html) {
+  public static ResultModel queryToResult(QueryModel queryModel, String html, String baseURL) {
     ResultModel resultModel = new ResultModel();
-    Document document = Jsoup.parse(html);
+    Document document = Jsoup.parse(html, baseURL);
 
     // Search for each query
     for (QueryModel.DataSelector queryPair : queryModel.data) {
@@ -103,6 +105,6 @@ public class ParseUtils {
    * @return json representation of the model
    */
   public static String resultToJSON(ResultModel resultModel) {
-    return gson.toJson(resultModel);
+    return gsonPretty.toJson(resultModel);
   }
 }

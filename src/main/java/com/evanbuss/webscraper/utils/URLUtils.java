@@ -12,7 +12,7 @@ public class URLUtils {
    */
   public static String verifyURL(String url) {
     if (!url.contains("https://") || !url.contains("http://")) {
-      return "https://" + url;
+      return "http://" + url;
     }
     return url;
   }
