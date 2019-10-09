@@ -5,3 +5,6 @@ Bugs:
 
 Working:
    Pass the user's QueryModel to the threads that request it
+
+
+Generate a documentation page to show how to use the GUI

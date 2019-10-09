@@ -205,10 +205,12 @@ public class SettingsTabController {
                 document.getElementsByTag("script").remove();
 
                 mainController.updateHTML(document.toString());
+                urlField.getStyleClass().removeIf(s -> s.equals("text-area-bad-input"));
 
               } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Invalid URL!!");
+                urlField.getStyleClass().add("text-area-bad-input");
               } finally {
                 enableProgress(false);
               }
