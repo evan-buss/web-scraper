@@ -1,7 +1,7 @@
 package com.evanbuss.webscraper.crawler;
 
-import com.evanbuss.webscraper.models.LinkModel;
 import com.evanbuss.webscraper.models.ParsedPagesModel;
+import com.evanbuss.webscraper.models.QueryModel;
 import com.evanbuss.webscraper.ui.CrawlingDoneListener;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -16,8 +16,9 @@ public class Crawler implements Runnable {
   private final int timeout;
   private final int maxDepth;
   private final boolean finishAllJobs;
+  private final QueryModel query;
 
-  private ThreadPoolExecutor threadPool;
+  private final ThreadPoolExecutor threadPool;
   private CrawlingDoneListener doneListener;
   private boolean isRunning = true;
 
@@ -25,6 +26,7 @@ public class Crawler implements Runnable {
     // Required parameters
     private final String url;
     private final ParsedPagesModel model;
+    private final QueryModel query;
 
     // Optional parameters with defaults
     private int numThreads = 5;
@@ -33,9 +35,10 @@ public class Crawler implements Runnable {
     private int maxDepth = -1;
     private boolean finishAllJobs = false;
 
-    public Builder(String url, ParsedPagesModel model) {
+    public Builder(String url, ParsedPagesModel model, QueryModel query) {
       this.url = url;
       this.model = model;
+      this.query = query;
     }
 
     public Builder finishAllJobs(boolean bool) {
@@ -75,6 +78,7 @@ public class Crawler implements Runnable {
     this.timeout = builder.timeout;
     this.maxDepth = builder.maxDepth;
     this.finishAllJobs = builder.finishAllJobs;
+    this.query = builder.query;
 
     threadPool =
         new ThreadPoolExecutor(
@@ -88,9 +92,7 @@ public class Crawler implements Runnable {
   @Override
   public void run() {
     long startTime = System.currentTimeMillis();
-
-    LinkModel linkModel = new LinkModel(url, 1);
-    threadPool.execute(new ScrapingThread(linkModel, model, threadPool, delay, maxDepth));
+    threadPool.execute(new ScrapingThread(url, model, query, threadPool, delay));
 
     int idleCounter = 0;
 

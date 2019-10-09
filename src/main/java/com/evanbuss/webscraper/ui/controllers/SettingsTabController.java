@@ -2,6 +2,9 @@ package com.evanbuss.webscraper.ui.controllers;
 
 import com.evanbuss.webscraper.crawler.Crawler;
 import com.evanbuss.webscraper.models.ParsedPagesModel;
+import com.evanbuss.webscraper.models.QueryModel;
+import com.evanbuss.webscraper.utils.ParseUtils;
+import com.evanbuss.webscraper.utils.URLUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -10,14 +13,13 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+@SuppressWarnings("WeakerAccess")
 public class SettingsTabController {
   @FXML
   private ProgressIndicator loadingSpinner;
@@ -50,11 +52,11 @@ public class SettingsTabController {
   @FXML
   private AnchorPane rootPane;
 
-  private ParsedPagesModel model;
+  private final ParsedPagesModel model;
   private File selectedFile;
   private boolean isRunning = false;
   private Crawler crawler;
-  private Timeline timeline;
+  private final Timeline timeline;
   private long currentTime;
   private MainController mainController;
 
@@ -122,31 +124,46 @@ public class SettingsTabController {
   @FXML
   public void onRunClicked() {
     if (!isRunning) {
-      model.clear();
-      runButton.setText("Stop");
+      QueryModel queryModel;
 
       try {
-        // Ensure valid URL
-        new URL(verifyURL(urlField.getText()));
-      } catch (MalformedURLException ex) {
+        queryModel = ParseUtils.jsonToQuery(mainController.getQueryJSON());
+      } catch (Exception e) {
+        System.out.println("Invalid query");
+        mainController.setQueryError();
         return;
       }
 
-      crawler = buildCrawler();
+      model.clear();
+      try {
+        // Ensure valid URL
+        if (urlField.getText().length() == 0) throw new MalformedURLException();
+        new URL(URLUtils.verifyURL(urlField.getText()));
+        setURLError(false);
+      } catch (MalformedURLException ex) {
+        setURLError(true);
+        return;
+      }
+
+      crawler = buildCrawler(queryModel);
       crawler.setDoneListener(
           () -> {
             timeline.stop();
             Platform.runLater(() -> runButton.setText("Start"));
           });
+
       Thread thread = new Thread(crawler);
       thread.setDaemon(true);
       thread.start();
+
       timeline.playFromStart();
+      runButton.setText("Stop");
+      isRunning = !isRunning;
     } else {
       crawler.shutdown();
       runButton.setText("Start");
+      isRunning = !isRunning;
     }
-    isRunning = !isRunning;
   }
 
   /** Save the parsed website to the selected file */
@@ -171,10 +188,10 @@ public class SettingsTabController {
    *
    * @return returns the new Crawler object
    */
-  private Crawler buildCrawler() {
+  private Crawler buildCrawler(QueryModel queryModel) {
     // Build a crawler with the desired conditions
     Crawler.Builder builder =
-        new Crawler.Builder(verifyURL(urlField.getText()), model)
+        new Crawler.Builder(URLUtils.verifyURL(urlField.getText()), model, queryModel)
             .numThreads(workersField.getValue())
             .finishAllJobs(clearQueueCB.isSelected())
             .delay(requestSpinner.getValue());
@@ -197,19 +214,23 @@ public class SettingsTabController {
         new Thread(
             () -> {
               try {
-                Document document = Jsoup.connect(verifyURL(urlField.getText())).get();
-                document.getElementsByTag("script").remove();
-
-                mainController.updateHTML(document.toString());
-                urlField.getStyleClass().removeIf(s -> s.equals("text-area-bad-input"));
-
+                mainController.updateHTML(ParseUtils.urlToHTML(urlField.getText()));
+                setURLError(false);
               } catch (IOException e) {
-                urlField.getStyleClass().add("text-area-bad-input");
+                setURLError(true);
               } finally {
                 enableProgress(false);
               }
             });
     thread.start();
+  }
+
+  private void setURLError(boolean error) {
+    if (error) {
+      urlField.getStyleClass().add("text-area-bad-input");
+    } else {
+      urlField.getStyleClass().removeIf(s -> s.equals("text-area-bad-input"));
+    }
   }
 
   /**
@@ -225,21 +246,6 @@ public class SettingsTabController {
       loadingSpinner.setVisible(false);
       loadingSpinner.setManaged(false);
     }
-  }
-
-  /**
-   * Check if the given url has the proper https or http prefix. If not return the url with the
-   * prefix prepended
-   *
-   * @param url - url to check if protocol is present
-   * @return the url unchanged if correct protocol or the url with the correct protocol if it was
-   *     missing
-   */
-  private String verifyURL(String url) {
-    if (!url.contains("https://") || !url.contains("http://")) {
-      return "https://" + url;
-    }
-    return url;
   }
 
   void inject(MainController controller) {

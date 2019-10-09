@@ -1,31 +1,30 @@
 package com.evanbuss.webscraper.crawler;
 
-import com.evanbuss.webscraper.models.LinkModel;
 import com.evanbuss.webscraper.models.ParsedPagesModel;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+import com.evanbuss.webscraper.models.QueryModel;
+import com.evanbuss.webscraper.models.ResultModel;
+import com.evanbuss.webscraper.utils.ParseUtils;
 
 import java.io.IOException;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class ScrapingThread implements Runnable {
+class ScrapingThread implements Runnable {
 
-  private LinkModel linkModel;
-  private long delay;
-  private ParsedPagesModel model;
-  private ThreadPoolExecutor threadPool;
-  private int maxDepth;
+  private final String url;
+  private final long delay;
+  private final ParsedPagesModel model;
+  private final QueryModel query;
+  private final ThreadPoolExecutor threadPool;
 
   ScrapingThread(
-      LinkModel linkModel,
+      String url,
       ParsedPagesModel model,
+      QueryModel query,
       ThreadPoolExecutor threadPool,
-      long delay,
-      int maxDepth) {
-    this.linkModel = linkModel;
+      long delay) {
+    this.url = url;
     this.model = model;
+    this.query = query;
     this.threadPool = threadPool;
     this.delay = delay;
   }
@@ -35,36 +34,26 @@ public class ScrapingThread implements Runnable {
     try {
       Thread.sleep(delay);
 
-      Connection.Response response =
-          Jsoup.connect(linkModel.getUrl())
-              .userAgent(
-                  "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:69.0) Gecko/20100101 Firefox/69.0")
-              .execute();
+      String html = ParseUtils.urlToHTML(url);
 
-      // End thread early if bad http response
-      if (response.statusCode() != 200) {
-        System.out.println(response.statusCode());
-        return;
-      }
-
-      // System.out.println("NEW THREAD: " + linkModel.getUrl() + " - " + response.statusCode());
-      Document htmlDoc = response.parse();
-      Elements links = htmlDoc.select("a[href]");
+      ResultModel resultModel = ParseUtils.queryToResult(query, html);
 
       // Add all visited base links to the model
-      model.addItem(linkModel.getUrl(), linkModel.getDepth());
+      model.addItem(url, resultModel);
 
-      links.forEach(
-          element -> {
-            String link = element.attr("abs:href");
-            LinkModel found = new LinkModel(link, linkModel.getDepth() + 1);
-            // If the found link hasn't been visited before, add it to the parse queue.
-            // if (!model.contains(found) && (found.getDepth() <= maxDepth || maxDepth == -1)) {
-            if (!model.contains(found) && !threadPool.isShutdown() && !threadPool.isTerminating()) {
-              threadPool.execute(new ScrapingThread(found, model, threadPool, delay, maxDepth));
+      // TODO: Do something with the data retrieved from the HTML
+      resultModel.data.forEach(resultPair -> {
+      });
+
+      // For each link found, we need to
+      resultModel.links.forEach(
+          urlString -> {
+            if (!threadPool.isShutdown() && !threadPool.isTerminating()) {
+              threadPool.execute(new ScrapingThread(urlString, model, query, threadPool, delay));
             }
           });
     } catch (IOException | IllegalArgumentException | InterruptedException e) {
+      System.out.println("Error parsing HTML or SOMETHING");
       // This is expected, the service may be shutdown and cancel in-progress threads.
       // System.out.println("Something went wrong in the ScrapingThread");
     }

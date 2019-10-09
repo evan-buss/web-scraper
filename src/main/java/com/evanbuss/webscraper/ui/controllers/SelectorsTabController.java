@@ -1,16 +1,12 @@
 package com.evanbuss.webscraper.ui.controllers;
 
-import com.evanbuss.webscraper.ui.models.QueryModel;
-import com.evanbuss.webscraper.ui.models.ResultModel;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.evanbuss.webscraper.models.QueryModel;
+import com.evanbuss.webscraper.models.ResultModel;
+import com.evanbuss.webscraper.utils.ParseUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
+@SuppressWarnings("WeakerAccess")
 public class SelectorsTabController {
 
   @FXML
@@ -21,6 +17,15 @@ public class SelectorsTabController {
 
   @FXML
   public void initialize() {
+
+    // Update the app's main state when the focus leaves the text box
+    selectorTA
+        .focusedProperty()
+        .addListener(
+            (obs, oldVal, newVal) -> {
+              if (!newVal) mainController.setQueryJSON(selectorTA.getText());
+            });
+
     selectorTA.setOnKeyTyped(
         event -> {
           // Replace default 8 char tabs with 2 chars
@@ -66,52 +71,24 @@ public class SelectorsTabController {
    */
   @FXML
   public void parseSelectors() {
-    Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-    final QueryModel queryModel;
-
     try {
-      queryModel = gson.fromJson(selectorTA.getText(), QueryModel.class);
-      ResultModel result = new ResultModel();
+      QueryModel queryModel = ParseUtils.jsonToQuery(selectorTA.getText());
+
+      // Make sure the user has entered a website before trying to extract data
       if (mainController.getHTML().length() == 0) {
         resultsTA.setText(
             "Set a \"Base URL\" in the Settings tab to validate your queries against.");
         return;
       }
-
-      Document document = Jsoup.parse(mainController.getHTML());
-
-      // Search for each query
-      for (QueryModel.DataSelector queryPair : queryModel.data) {
-        Elements elements = document.select(queryPair.query);
-        for (Element elt : elements) {
-          switch (queryPair.type) {
-            case "HREF":
-              String href = elt.attr("href");
-              if (!href.equals("")) {
-                result.data.add(new ResultModel.ResultPair(queryPair.name, href));
-              }
-              break;
-            case "TEXT":
-              result.data.add(new ResultModel.ResultPair(queryPair.name, elt.text()));
-              break;
-            default:
-              System.out.println("WTF BRO");
-          }
-        }
-      }
-
-      // Search for each link
-      for (String linkSelector : queryModel.links) {
-        Elements elements = document.select(linkSelector);
-        for (Element elt : elements) {
-          result.links.add(elt.attr("href"));
-        }
-      }
-
-      String json = gson.toJson(result);
+      ResultModel result = ParseUtils.queryToResult(queryModel, mainController.getHTML());
+      String json = ParseUtils.resultToJSON(result);
       resultsTA.setText(json);
     } catch (Exception e) {
       resultsTA.setText("Error: Could not parse your input.\n\nPlease update and try again.");
     }
+  }
+
+  void setResultText() {
+    resultsTA.setText("Invalid JSON, please fix it.");
   }
 }

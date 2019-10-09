@@ -1,4 +1,4 @@
-package com.evanbuss.webscraper.ui.models;
+package com.evanbuss.webscraper.models;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -15,16 +15,16 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 public class ResultModel {
-  public List<ResultPair> data = new ArrayList<>();
-  public List<String> links = new ArrayList<>();
+  public final List<ResultPair> data = new ArrayList<>();
+  public final List<String> links = new ArrayList<>();
 
   /**
    * ResultPair represents a single data result. It contains the user's desired variable name and the data itself
    */
   @ToString
   public static class ResultPair {
-    public String name;
-    public String value;
+    public final String name;
+    public final String value;
 
     public ResultPair(String name, String value) {
       this.name = name;

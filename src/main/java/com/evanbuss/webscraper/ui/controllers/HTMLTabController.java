@@ -3,12 +3,20 @@ package com.evanbuss.webscraper.ui.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 
+@SuppressWarnings("WeakerAccess")
 public class HTMLTabController {
   @FXML
-  TextArea siteDataTextArea;
-  private MainController mainController;
+  private TextArea siteDataTextArea;
 
-  void inject(MainController mainController) {
-    this.mainController = mainController;
+  String getHTML() {
+    return siteDataTextArea.getText();
+  }
+
+  void setHTML(String html) {
+    siteDataTextArea.setText(html);
+  }
+
+  void setDisabled() {
+    siteDataTextArea.setDisable(false);
   }
 }

@@ -1,4 +1,4 @@
-package com.evanbuss.webscraper.ui.models;
+package com.evanbuss.webscraper.models;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
