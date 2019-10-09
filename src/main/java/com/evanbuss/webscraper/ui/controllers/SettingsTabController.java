@@ -22,20 +22,34 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class SettingsTabController {
-  public Button runButton;
-  public TextField urlField;
-  public TextField workersField;
-  public TextField depthField;
-  public CheckBox depthEnabledCB;
-  public TextField timeoutField;
-  public CheckBox timeoutEnabledCB;
-  public TextField requestField;
-  public CheckBox clearQueueCB;
-  public Label elapsedLabel;
-  public Label parsedLabel;
-  public Label progressLabel;
-  public Label fileLabel;
-  public AnchorPane rootPane;
+  @FXML
+  private Button runButton;
+  @FXML
+  private TextField urlField;
+  @FXML
+  private TextField workersField;
+  @FXML
+  private TextField depthField;
+  @FXML
+  private CheckBox depthEnabledCB;
+  @FXML
+  private TextField timeoutField;
+  @FXML
+  private CheckBox timeoutEnabledCB;
+  @FXML
+  private TextField requestField;
+  @FXML
+  private CheckBox clearQueueCB;
+  @FXML
+  private Label elapsedLabel;
+  @FXML
+  private Label parsedLabel;
+  @FXML
+  private Label progressLabel;
+  @FXML
+  private Label fileLabel;
+  @FXML
+  private AnchorPane rootPane;
 
   private ParsedPagesModel model;
   private File selectedFile;
@@ -82,9 +96,7 @@ public class SettingsTabController {
         .focusedProperty()
         .addListener(
             (obs, oldVal, newVal) -> {
-              if (!newVal) {
-                loadSiteData();
-              }
+              if (!newVal && urlField.getText().trim().length() > 0) loadSiteData();
             });
   }
 
@@ -121,17 +133,13 @@ public class SettingsTabController {
     isRunning = !isRunning;
   }
 
-  /**
-   * Save the parsed website to the selected file
-   */
+  /** Save the parsed website to the selected file */
   @FXML
   public void dumpDataToFile() {
     model.saveToFile(selectedFile);
   }
 
-  /**
-   * Show the file picker to select data file location
-   */
+  /** Show the file picker to select data file location */
   @FXML
   public void onSelectFile() {
     FileChooser fileChooser = new FileChooser();
@@ -166,16 +174,13 @@ public class SettingsTabController {
     return builder.build();
   }
 
-  /**
-   * Load and parse the site's HTML into the HTML viewer tab's textfield.
-   */
+  /** Load and parse the site's HTML into the HTML viewer tab's textfield. */
   private void loadSiteData() {
     try {
       Document document = Jsoup.connect(urlField.getText()).get();
       document.getElementsByTag("script").remove();
 
       mainController.updateHTML(document.toString());
-      // siteDataTextArea.setText(document.toString());
 
     } catch (IOException e) {
       e.printStackTrace();

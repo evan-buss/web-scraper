@@ -21,4 +21,8 @@ public class MainController {
   void updateHTML(String htmlContent) {
     htmlTabController.siteDataTextArea.setText(htmlContent);
   }
+
+  String getHTML() {
+    return htmlTabController.siteDataTextArea.getText();
+  }
 }

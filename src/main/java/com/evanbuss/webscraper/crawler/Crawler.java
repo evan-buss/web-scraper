@@ -4,25 +4,22 @@ import com.evanbuss.webscraper.models.LinkModel;
 import com.evanbuss.webscraper.models.ParsedPagesModel;
 import com.evanbuss.webscraper.ui.CrawlingDoneListener;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class Crawler implements Runnable {
 
-  private String url;
-  private ParsedPagesModel model;
-  private long delay;
-  private int timeout;
-  private int maxDepth;
-  private boolean isRunning = true;
-  private boolean finishAllJobs;
+  private final String url;
+  private final ParsedPagesModel model;
+  private final long delay;
+  private final int timeout;
+  private final int maxDepth;
+  private final boolean finishAllJobs;
 
   private ThreadPoolExecutor threadPool;
-  private BlockingQueue<LinkModel> queue = new LinkedBlockingQueue<>();
-
   private CrawlingDoneListener doneListener;
+  private boolean isRunning = true;
 
   public static class Builder {
     // Required parameters
@@ -133,8 +130,8 @@ public class Crawler implements Runnable {
     }
 
     // FIXME: Figure out the best way to wait until the queue is completely shut down
-    //while (threadPool.getTaskCount() != threadPool.getCompletedTaskCount()) {}
-    //System.out.println("Completely shutdown?");
+    // while (threadPool.getTaskCount() != threadPool.getCompletedTaskCount()) {}
+    // System.out.println("Completely shutdown?");
     while (threadPool.isTerminating()) {
     }
     doneListener.crawlingDone();

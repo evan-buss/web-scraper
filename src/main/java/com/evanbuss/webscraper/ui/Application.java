@@ -11,7 +11,7 @@ public class Application extends javafx.application.Application {
   public void start(Stage primaryStage) throws Exception {
     Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
     Scene scene = new Scene(root);
-
+    scene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
     primaryStage.setTitle("Web Scraper");
     primaryStage.setScene(scene);
     primaryStage.show();
