@@ -16,7 +16,7 @@
             </HBox>
             <TextArea fx:id="selectorTA" prefHeight="369.0" prefWidth="295.0"
                       promptText="Enter your JSON selection object" styleClass="monospace-text"
-                      text="{&#10;  &quot;data&quot;: [&#10;    {&#10;      &quot;name&quot;: &quot;page title&quot;,&#10;      &quot;query&quot;: &quot;head &gt; title&quot;,&#10;      &quot;type&quot;: &quot;TEXT&quot;&#10;    }&#10;  ],&#10;  &quot;links&quot;: [&#10;    &quot;a&quot;&#10;  ]&#10;}&#10;"
+                      text="{&#10;  &quot;data&quot;: {&#10;    &quot;title&quot;: &quot;head &gt; title&quot;&#10;  },&#10;  &quot;links&quot;: [&#10;    &quot;a&quot;&#10;  ]&#10;}"
                       wrapText="true" VBox.vgrow="ALWAYS"/>
         </VBox>
     </AnchorPane>

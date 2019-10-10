@@ -1,5 +1,7 @@
 package com.evanbuss.webscraper.models;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -15,8 +17,11 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 public class ResultModel {
-  public final List<ResultPair> data = new ArrayList<>();
-  public final transient List<String> links = new ArrayList<>();
+  // public final List<ResultPair> data = new ArrayList<>();
+  // Holds each data name and variable result
+  // public final Map<String, String> data = new LinkedHashMap<>();
+  public Multimap<String, String> data = ArrayListMultimap.create();
+  public final List<String> links = new ArrayList<>();
 
   /**
    * ResultPair represents a single data result. It contains the user's desired variable name and

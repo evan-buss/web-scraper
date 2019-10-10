@@ -3,6 +3,8 @@ package com.evanbuss.webscraper.models;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.Map;
+
 /**
  * QueryModel represents a user's request for data from a specific page using CSS selectors
  *
@@ -12,7 +14,8 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class QueryModel {
-  public DataSelector[] data;
+  // public DataSelector[] data;
+  public Map<String, String> data;
   public String[] links;
 
   /**

@@ -2,6 +2,7 @@ package com.evanbuss.webscraper.utils;
 
 import com.evanbuss.webscraper.models.QueryModel;
 import com.evanbuss.webscraper.models.ResultModel;
+import com.evanbuss.webscraper.models.ResultModelAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.jsoup.Connection;
@@ -11,11 +12,16 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class ParseUtils {
 
   private static final Gson gsonPretty =
-      new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+      new GsonBuilder()
+          .setPrettyPrinting()
+          .disableHtmlEscaping()
+          .registerTypeAdapter(ResultModel.class, new ResultModelAdapter())
+          .create();
   private static final Gson gson = new Gson();
 
   /**
@@ -53,18 +59,21 @@ public class ParseUtils {
     Document document = Jsoup.parse(html, baseURL);
 
     // Search for each query
-    for (QueryModel.DataSelector queryPair : queryModel.data) {
-      Elements elements = document.select(queryPair.query);
+    for (Map.Entry<String, String> queryPair : queryModel.data.entrySet()) {
+
+      String[] query = queryPair.getValue().split(":");
+      Elements elements = document.select(query[0]);
+
       for (Element elt : elements) {
-        switch (queryPair.type) {
+        switch (query[1].toUpperCase()) {
           case "HREF":
             String href = elt.attr("href");
             if (!href.equals("")) {
-              resultModel.data.add(new ResultModel.ResultPair(queryPair.name, href));
+              resultModel.data.put(queryPair.getKey(), href);
             }
             break;
           case "TEXT":
-            resultModel.data.add(new ResultModel.ResultPair(queryPair.name, elt.text()));
+            resultModel.data.put(queryPair.getKey(), elt.text());
             break;
           default:
             System.out.println("Invalid Query Type");
@@ -92,7 +101,9 @@ public class ParseUtils {
    */
   public static QueryModel jsonToQuery(String json) throws Exception {
     try {
-      return gson.fromJson(json, QueryModel.class);
+      QueryModel queryModel = gson.fromJson(json, QueryModel.class);
+      System.out.println(queryModel);
+      return queryModel;
     } catch (Exception e) {
       throw new Exception();
     }

@@ -39,13 +39,18 @@ class ScrapingThread implements Runnable {
       ResultModel resultModel = ParseUtils.queryToResult(query, result[0], result[1]);
 
       // Add all visited base links to the model
+      System.out.println("Adding model: " + url);
       model.addItem(url, resultModel);
 
       // For each link found, we need to
       resultModel.links.forEach(
-          urlString -> {
-            if (!threadPool.isShutdown() && !threadPool.isTerminating()) {
-              threadPool.execute(new ScrapingThread(urlString, model, query, threadPool, delay));
+          newURL -> {
+            if (!model.contains(newURL)
+                && !threadPool.isShutdown()
+                && !threadPool.isTerminating()) {
+              threadPool.execute(new ScrapingThread(newURL, model, query, threadPool, delay));
+            } else {
+              System.out.println("Model contains: " + url);
             }
           });
     } catch (IOException | IllegalArgumentException | InterruptedException e) {
