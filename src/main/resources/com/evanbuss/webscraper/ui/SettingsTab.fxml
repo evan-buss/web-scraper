@@ -30,12 +30,6 @@
             <Label text="Maximum Depth" GridPane.rowIndex="2"/>
             <Label text="Timeout (seconds)" GridPane.rowIndex="3"/>
             <Label layoutX="10.0" layoutY="203.0" text="Request Delay (ms)" GridPane.rowIndex="4"/>
-            <Button fx:id="runButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    onMouseClicked="#onRunClicked" text="Start" GridPane.columnIndex="2">
-                <GridPane.margin>
-                    <Insets left="20.0" right="20.0"/>
-                </GridPane.margin>
-            </Button>
             <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1">
                 <TextField fx:id="urlField" HBox.hgrow="ALWAYS">
                     <HBox.margin>
@@ -48,36 +42,42 @@
                     </HBox.margin>
                 </ProgressIndicator>
             </HBox>
-            <CheckBox fx:id="depthEnabledCB" mnemonicParsing="false" text="Disabled" GridPane.columnIndex="2"
-                      GridPane.rowIndex="2"/>
-            <CheckBox fx:id="timeoutEnabledCB" mnemonicParsing="false" text="Disabled" GridPane.columnIndex="2"
-                      GridPane.rowIndex="3"/>
-            <CheckBox fx:id="clearQueueCB" mnemonicParsing="false" text="Clear Work Queue Before Stopping"
-                      GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-            <Spinner fx:id="requestSpinner" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1"
-                     GridPane.rowIndex="4">
-                <GridPane.margin>
-                    <Insets left="20.0" right="20.0"/>
-                </GridPane.margin>
-            </Spinner>
-            <Spinner fx:id="timeoutField" disable="true" editable="true" layoutX="200.0" layoutY="166.0"
-                     maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                <GridPane.margin>
-                    <Insets left="20.0" right="20.0"/>
-                </GridPane.margin>
-            </Spinner>
-            <Spinner fx:id="depthField" disable="true" editable="true" layoutX="200.0" layoutY="131.0"
-                     maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                <GridPane.margin>
-                    <Insets left="20.0" right="20.0"/>
-                </GridPane.margin>
-            </Spinner>
             <Spinner fx:id="workersField" editable="true" layoutX="200.0" layoutY="96.0"
                      maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1">
                 <GridPane.margin>
                     <Insets left="20.0" right="20.0"/>
                 </GridPane.margin>
             </Spinner>
+            <CheckBox fx:id="depthEnabledCB" mnemonicParsing="false" text="Disabled" GridPane.columnIndex="2"
+                      GridPane.rowIndex="2"/>
+            <Spinner fx:id="depthField" disable="true" editable="true" layoutX="200.0" layoutY="131.0"
+                     maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </Spinner>
+            <CheckBox fx:id="timeoutEnabledCB" mnemonicParsing="false" text="Disabled" GridPane.columnIndex="2"
+                      GridPane.rowIndex="3"/>
+            <Spinner fx:id="timeoutField" disable="true" editable="true" layoutX="200.0" layoutY="166.0"
+                     maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </Spinner>
+            <Spinner fx:id="requestSpinner" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1"
+                     GridPane.rowIndex="4">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </Spinner>
+            <CheckBox fx:id="clearQueueCB" mnemonicParsing="false" text="Clear Work Queue Before Stopping"
+                      GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+            <Button fx:id="runButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                    onMouseClicked="#onRunClicked" text="Start" GridPane.columnIndex="2">
+                <GridPane.margin>
+                    <Insets left="20.0" right="20.0"/>
+                </GridPane.margin>
+            </Button>
         </GridPane>
         <Separator prefWidth="200.0"/>
         <GridPane prefHeight="143.0" prefWidth="582.0" VBox.vgrow="ALWAYS">

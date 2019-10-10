@@ -2,8 +2,11 @@
 Breadth first search web scraper written in Java using the JavaFX toolkit.
 
 ## GUI
+### Settings View
 ![settings view](https://raw.githubusercontent.com/evan-buss/web-scraper-swing/master/screenshot/settings.png)
+### HTML View
 ![html view](https://raw.githubusercontent.com/evan-buss/web-scraper-swing/master/screenshot/html.png)
+### JSON Selectors View
 ![json view](https://raw.githubusercontent.com/evan-buss/web-scraper-swing/master/screenshot/json.png)
 
 ## Features
