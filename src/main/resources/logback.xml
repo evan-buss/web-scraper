@@ -1,41 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration debug="true" scan="true" scanPeriod="30 seconds">
-    <property name="LOG_PATH" value="/home/evan/Downloads"/>
-    <property name="LOG_ARCHIVE" value="${LOG_PATH}/archive"/>
-    <timestamp key="timestamp-by-second" datePattern="yyyyMMdd'T'HHmmss"/>
-    <appender name="Console-Appender" class="ch.qos.logback.core.ConsoleAppender">
-        <layout>
-            <pattern>%msg%n</pattern>
-        </layout>
-    </appender>
-    <appender name="File-Appender" class="ch.qos.logback.core.FileAppender">
-        <file>${LOG_PATH}/logfile-${timestamp-by-second}.log</file>
+<configuration scan="true">
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
         <encoder>
-            <pattern>%msg%n</pattern>
-            <outputPatternAsHeader>true</outputPatternAsHeader>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <appender name="RollingFile-Appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/rollingfile.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_ARCHIVE}/rollingfile.log%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>1KB</totalSizeCap>
-        </rollingPolicy>
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>log/webscraper.log</file>
         <encoder>
-            <pattern>%msg%n</pattern>
+            <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
         </encoder>
-    </appender>
-    <appender name="Async-Appender" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="RollingFile-Appender"/>
     </appender>
 
-    <logger name="com.evanbuss.webscraper" level="info" additivity="false">
-        <appender-ref ref="Console-Appender"/>
-        <appender-ref ref="File-Appender"/>
-        <appender-ref ref="Async-Appender"/>
-    </logger>
-    <root>
-        <appender-ref ref="Console-Appender"/>
+    <root level="debug">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 </configuration>
