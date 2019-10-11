@@ -4,18 +4,18 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 
 public class HTMLTabController {
-  @FXML
-  private TextArea siteDataTextArea;
+    @FXML
+    private TextArea siteDataTextArea;
 
-  String getHTML() {
-    return siteDataTextArea.getText();
-  }
+    String getHTML() {
+        return siteDataTextArea.getText();
+    }
 
-  void setHTML(String html) {
-    siteDataTextArea.setText(html);
-  }
+    void setHTML(String html) {
+        siteDataTextArea.setText(html);
+    }
 
-  void setDisabled() {
-    siteDataTextArea.setDisable(false);
-  }
+    void setDisabled() {
+        siteDataTextArea.setDisable(false);
+    }
 }

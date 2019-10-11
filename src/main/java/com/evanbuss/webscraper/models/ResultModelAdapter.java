@@ -8,11 +8,11 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
 public class ResultModelAdapter implements JsonSerializer<ResultModel> {
-  @Override
-  public JsonElement serialize(ResultModel src, Type typeOfSrc, JsonSerializationContext context) {
-    JsonObject obj = new JsonObject();
-    obj.add("query", context.serialize(src.data.asMap()));
-    obj.add("links", context.serialize(src.links));
-    return obj;
-  }
+    @Override
+    public JsonElement serialize(ResultModel src, Type typeOfSrc, JsonSerializationContext context) {
+        JsonObject obj = new JsonObject();
+        obj.add("query", context.serialize(src.data.asMap()));
+        obj.add("links", context.serialize(src.links));
+        return obj;
+    }
 }

@@ -11,46 +11,46 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class ParsedPagesModel {
-  private final ConcurrentMap<String, ResultModel> data = new ConcurrentHashMap<>();
-  private long counter;
+    private final ConcurrentMap<String, ResultModel> data = new ConcurrentHashMap<>();
+    private long counter;
 
-  public void addItem(String url, ResultModel model) {
-    ResultModel present = data.putIfAbsent(url, model);
-    if (present == null) {
-      counter++;
+    public void addItem(String url, ResultModel model) {
+        ResultModel present = data.putIfAbsent(url, model);
+        if (present == null) {
+            counter++;
+        }
     }
-  }
 
-  public long getSize() {
-    return counter;
-  }
+    public long getSize() {
+        return counter;
+    }
 
-  public void clear() {
-    data.clear();
-    counter = 0;
-  }
+    public void clear() {
+        data.clear();
+        counter = 0;
+    }
 
-  public void saveToFile(File selectedFile) {
-    Thread writerThread =
-        new Thread(
-            () -> {
-              try (PrintWriter writer = new PrintWriter(selectedFile)) {
-                Gson gson =
-                    new GsonBuilder()
-                        .setPrettyPrinting()
-                        .disableHtmlEscaping()
-                        .registerTypeAdapter(ResultModel.class, new ResultModelDataAdapter())
-                        .create();
-                writer.write(gson.toJson(new ArrayList<>(data.values())));
-              } catch (IOException e) {
-                System.out.println("Could not open Print Writer");
-              }
-            });
+    public void saveToFile(File selectedFile) {
+        Thread writerThread =
+                new Thread(
+                        () -> {
+                            try (PrintWriter writer = new PrintWriter(selectedFile)) {
+                                Gson gson =
+                                        new GsonBuilder()
+                                                .setPrettyPrinting()
+                                                .disableHtmlEscaping()
+                                                .registerTypeAdapter(ResultModel.class, new ResultModelDataAdapter())
+                                                .create();
+                                writer.write(gson.toJson(new ArrayList<>(data.values())));
+                            } catch (IOException e) {
+                                System.out.println("Could not open Print Writer");
+                            }
+                        });
 
-    writerThread.start();
-  }
+        writerThread.start();
+    }
 
-  public boolean contains(String url) {
-    return data.containsKey(url);
-  }
+    public boolean contains(String url) {
+        return data.containsKey(url);
+    }
 }

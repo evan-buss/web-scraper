@@ -14,21 +14,21 @@ import java.util.Map;
 @ToString
 @EqualsAndHashCode
 public class QueryModel {
-  // public DataSelector[] data;
-  public Map<String, String> data;
-  public String[] links;
+    // public DataSelector[] data;
+    public Map<String, String> data;
+    public String[] links;
 
-  /**
-   * DataSelector represents a single piece of data to be extracted from a page
-   *
-   * <p>The user sets a name that will be used for the data, the CSS selector to find it in the
-   * page, and a type. The type defines what method of extraction will be used when the data is
-   * found. TEXT extracts the text between the HTML element and HREF looks for an "href=" attribute
-   */
-  @ToString
-  public static class DataSelector {
-    public String name;
-    public String query;
-    public String type; // OPTIONS: HREF, TEXT
-  }
+    /**
+     * DataSelector represents a single piece of data to be extracted from a page
+     *
+     * <p>The user sets a name that will be used for the data, the CSS selector to find it in the
+     * page, and a type. The type defines what method of extraction will be used when the data is
+     * found. TEXT extracts the text between the HTML element and HREF looks for an "href=" attribute
+     */
+    @ToString
+    public static class DataSelector {
+        public String name;
+        public String query;
+        public String type; // OPTIONS: HREF, TEXT
+    }
 }
