@@ -1,4 +1,4 @@
-# java-web-scraper
+# web-scraper
 Breadth first search web scraper written in Java using the JavaFX toolkit.
 
 ## GUI

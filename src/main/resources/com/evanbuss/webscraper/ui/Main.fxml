@@ -19,5 +19,8 @@
         <Tab text="Data Extraction">
             <fx:include fx:id="selectorsTab" source="SelectorsTab.fxml"/>
         </Tab>
+        <Tab text="Site Graph">
+            <fx:include fx:id="graphTab" source="GraphTab.fxml"/>
+        </Tab>
     </TabPane>
 </AnchorPane>

@@ -13,6 +13,9 @@ public class MainController {
     private HTMLTabController htmlTabController;
     @FXML
     private SelectorsTabController selectorsTabController;
+    @FXML
+    private GraphController graphTabController;
+
     private String baseURI;
 
     @FXML

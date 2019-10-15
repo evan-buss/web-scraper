@@ -14,11 +14,13 @@ repositories {
 }
 
 javafx {
-    modules = ['javafx.controls', 'javafx.fxml']
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing']
 }
 
 dependencies {
     compile 'org.jsoup:jsoup:1.12.1'
+    implementation 'org.graphstream:gs-core:1.3'
+//    implementation 'org.graphstream:gs-ui:1.3'
     compile 'com.google.guava:guava:28.1-jre'
 
     compileOnly 'org.projectlombok:lombok:1.18.10'
