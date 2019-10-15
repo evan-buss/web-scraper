@@ -22,6 +22,7 @@ public class MainController {
     public void initialize() {
         settingsTabController.inject(this);
         selectorsTabController.inject(this);
+        graphTabController.inject(this);
     }
 
     void updateHTML(String htmlContent) {

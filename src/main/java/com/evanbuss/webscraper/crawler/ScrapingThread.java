@@ -40,7 +40,7 @@ class ScrapingThread implements Runnable {
 
             // Add all visited base links to the model
             System.out.println("Adding model: " + url);
-            model.addItem(url, resultModel);
+            if (!model.contains(url)) model.addItem(url, resultModel);
 
             // For each link found, we need to
             resultModel.links.forEach(

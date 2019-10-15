@@ -50,16 +50,14 @@ public class SettingsTabController {
     @FXML
     private AnchorPane rootPane;
 
-    private final ParsedPagesModel model;
     private File selectedFile;
     private boolean isRunning = false;
     private Crawler crawler;
-    private final Timeline timeline;
+    private Timeline timeline;
     private long currentTime;
     private MainController mainController;
 
     public SettingsTabController() {
-        model = new ParsedPagesModel();
         timeline =
                 new Timeline(
                         new KeyFrame(
@@ -67,7 +65,7 @@ public class SettingsTabController {
                                 actionEvent -> {
                                     currentTime++;
                                     elapsedLabel.setText(currentTime + " seconds");
-                                    parsedLabel.setText(String.valueOf(model.getSize()));
+                                    parsedLabel.setText(String.valueOf(ParsedPagesModel.getInstance().getSize()));
                                     long[] stats = crawler.getStats();
                                     progressLabel.setText(stats[0] + " / " + stats[1]);
                                 }),
@@ -77,6 +75,7 @@ public class SettingsTabController {
 
     @FXML
     public void initialize() {
+
         requestSpinner.setValueFactory(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 5000, 1000));
 
@@ -132,7 +131,7 @@ public class SettingsTabController {
                 return;
             }
 
-            model.clear();
+            ParsedPagesModel.getInstance().clear();
             try {
                 // Ensure valid URL
                 if (urlField.getText().length() == 0) throw new MalformedURLException();
@@ -169,7 +168,7 @@ public class SettingsTabController {
      */
     @FXML
     public void dumpDataToFile() {
-        model.saveToFile(selectedFile);
+        ParsedPagesModel.getInstance().saveToFile(selectedFile);
     }
 
     /**
@@ -193,7 +192,7 @@ public class SettingsTabController {
     private Crawler buildCrawler(QueryModel queryModel) {
         // Build a crawler with the desired conditions
         Crawler.Builder builder =
-                new Crawler.Builder(urlField.getText(), model, queryModel)
+                new Crawler.Builder(urlField.getText(), ParsedPagesModel.getInstance(), queryModel)
                         .numThreads(workersField.getValue())
                         .finishAllJobs(clearQueueCB.isSelected())
                         .delay(requestSpinner.getValue());
