@@ -12,21 +12,21 @@ class ScrapingThread implements Runnable {
 
     private final String url;
     private final long delay;
-    private final ParsedPagesModel model;
     private final QueryModel query;
     private final ThreadPoolExecutor threadPool;
+    private int depth;
 
     ScrapingThread(
             String url,
-            ParsedPagesModel model,
             QueryModel query,
             ThreadPoolExecutor threadPool,
-            long delay) {
+            long delay,
+            int depth) {
         this.url = url;
-        this.model = model;
         this.query = query;
         this.threadPool = threadPool;
         this.delay = delay;
+        this.depth = depth;
     }
 
     @Override
@@ -38,24 +38,31 @@ class ScrapingThread implements Runnable {
 
             ResultModel resultModel = ParseUtils.queryToResult(query, result[0], result[1]);
 
-            // Add all visited base links to the model
-            System.out.println("Adding model: " + url);
-            if (!model.contains(url)) model.addItem(url, resultModel);
+
+            if (notModelContains(url)) ParsedPagesModel.getInstance().addItem(url, resultModel, depth);
 
             // For each link found, we need to
             resultModel.links.forEach(
                     newURL -> {
-                        if (!model.contains(newURL)
+                        if (newURL.contains("social-study")) {
+                            System.out.println(newURL);
+                        }
+                        if (notModelContains(newURL)
                                 && !threadPool.isShutdown()
                                 && !threadPool.isTerminating()) {
-                            threadPool.execute(new ScrapingThread(newURL, model, query, threadPool, delay));
+                            System.out.println("adding " + newURL);
+                            threadPool.execute(new ScrapingThread(newURL, query, threadPool, delay, depth + 1));
                         } else {
-                            System.out.println("Model contains: " + url);
+//                            System.out.println("Model contains: " + newURL);
                         }
                     });
         } catch (IOException | IllegalArgumentException | InterruptedException e) {
             System.out.println(url + " : " + e.getMessage());
             // This is expected, the service may be shutdown and cancel in-progress threads.
         }
+    }
+
+    private boolean notModelContains(String url) {
+        return !ParsedPagesModel.getInstance().contains(url);
     }
 }

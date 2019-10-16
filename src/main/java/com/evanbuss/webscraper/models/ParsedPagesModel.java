@@ -2,6 +2,7 @@ package com.evanbuss.webscraper.models;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
@@ -12,12 +13,15 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ParsedPagesModel {
     private final ConcurrentMap<String, ResultModel> data = new ConcurrentHashMap<>();
     private long counter;
     private Graph graph;
     private Node prevNode = null;
+    private int prevDepth = 1;
+    public String randomColor = generateNewColor();
 
     private static ParsedPagesModel parsedPagesModel = new ParsedPagesModel();
 
@@ -25,21 +29,37 @@ public class ParsedPagesModel {
         return parsedPagesModel;
     }
 
+
+    public String generateNewColor() {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        return "rgb(" + random.nextInt(256) + "," + random.nextInt(256) + "," + random.nextInt(256) + ")";
+    }
+
     private ParsedPagesModel() {
         graph = new MultiGraph("pages");
     }
 
-    public void addItem(String url, ResultModel model) {
+    public synchronized void addItem(String url, ResultModel model, int depth) {
         ResultModel present = data.putIfAbsent(url, model);
         if (present == null) {
-
             Node newNode = graph.addNode(url);
-            newNode.setAttribute("ui.label", url);
+            newNode.setAttribute("ui.style", "shape:circle;fill-color: " +
+                    randomColor + ";size: 10px; text-alignment: center;");
             counter++;
-            if (prevNode != null) {
-                graph.addEdge(prevNode.getId() + "-" + newNode.getId(), newNode, prevNode);
+            if (prevNode != null) { // If it is not the first node, create an edge
+                Edge e = graph.addEdge(prevNode.getId() + "-" + newNode.getId(), prevNode, newNode, true);
+            } else {
+                prevNode = newNode;
+                newNode.setAttribute("ui.style", "shape:circle;fill-color: " +
+                        randomColor + ";size: 20px; text-alignment: center;");
             }
-            prevNode = newNode;
+
+            if (depth != prevDepth) {
+                randomColor = generateNewColor();
+                System.out.println(randomColor);
+                prevNode = newNode;
+                prevDepth = depth;
+            }
         }
     }
 

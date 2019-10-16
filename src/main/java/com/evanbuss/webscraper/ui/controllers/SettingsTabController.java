@@ -192,7 +192,7 @@ public class SettingsTabController {
     private Crawler buildCrawler(QueryModel queryModel) {
         // Build a crawler with the desired conditions
         Crawler.Builder builder =
-                new Crawler.Builder(urlField.getText(), ParsedPagesModel.getInstance(), queryModel)
+                new Crawler.Builder(urlField.getText(), queryModel)
                         .numThreads(workersField.getValue())
                         .finishAllJobs(clearQueueCB.isSelected())
                         .delay(requestSpinner.getValue());

@@ -1,6 +1,5 @@
 package com.evanbuss.webscraper.crawler;
 
-import com.evanbuss.webscraper.models.ParsedPagesModel;
 import com.evanbuss.webscraper.models.QueryModel;
 import com.evanbuss.webscraper.ui.CrawlingDoneListener;
 
@@ -11,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 public class Crawler implements Runnable {
 
     private final String url;
-    private final ParsedPagesModel model;
     private final long delay;
     private final int timeout;
     private final int maxDepth;
@@ -25,7 +23,6 @@ public class Crawler implements Runnable {
     public static class Builder {
         // Required parameters
         private final String url;
-        private final ParsedPagesModel model;
         private final QueryModel query;
 
         // Optional parameters with defaults
@@ -35,9 +32,8 @@ public class Crawler implements Runnable {
         private int maxDepth = -1;
         private boolean finishAllJobs = false;
 
-        public Builder(String url, ParsedPagesModel model, QueryModel query) {
+        public Builder(String url, QueryModel query) {
             this.url = url;
-            this.model = model;
             this.query = query;
         }
 
@@ -73,7 +69,6 @@ public class Crawler implements Runnable {
 
     private Crawler(Builder builder) {
         this.url = builder.url;
-        this.model = builder.model;
         this.delay = builder.delay;
         this.timeout = builder.timeout;
         this.maxDepth = builder.maxDepth;
@@ -92,7 +87,7 @@ public class Crawler implements Runnable {
     @Override
     public void run() {
         long startTime = System.currentTimeMillis();
-        threadPool.execute(new ScrapingThread(url, model, query, threadPool, delay));
+        threadPool.execute(new ScrapingThread(url, query, threadPool, delay, 1));
 
         int idleCounter = 0;
 
