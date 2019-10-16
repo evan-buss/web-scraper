@@ -10,7 +10,8 @@ Breadth first search web scraper written in Java using the JavaFX toolkit.
 ![html view](https://raw.githubusercontent.com/evan-buss/web-scraper-swing/master/screenshot/html.png)
 ### JSON Selectors View
 ![json view](https://raw.githubusercontent.com/evan-buss/web-scraper-swing/master/screenshot/json.png)
-
+### Scraped Graph
+![graph view](https://raw.githubusercontent.com/evan-buss/web-scraper-swing/master/screenshot/graph.png)
 ## Features
 
 - Breadth first search from a starting URL
