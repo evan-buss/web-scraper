@@ -28,16 +28,27 @@ Breadth first search web scraper written in Java using the JavaFX toolkit.
 - Selector view
     - Set the JSON output format by settings variable names and CSS selectors
     - Interactively test your selectors before starting the crawl
+- Graph View
+    - Get a deep understanding of the path the crawler took in a visual format
+    - Click any node to see the URL and data scraped from it
+    - Entertaining to watch
 
 ## Libraries
-
+- Gradle
 - JSoup
 - Guava
 - Lombok
 - Gson
 - JavaFX 
+- GraphStream
 
-## Old Swing GUI
+## Development
+- The project uses the Gradle build system. Simply import the project into any IDE and run the "application -> run" task
+
+## Usage
+- Download a prebuilt binary to run on any platform with 0 dependencies
+
+## Initial Swing GUI
 ![screenshot](https://raw.githubusercontent.com/evan-buss/web-scraper-swing/master/screenshot/main.png)
 
 

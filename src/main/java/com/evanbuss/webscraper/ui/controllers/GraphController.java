@@ -41,6 +41,7 @@ public class GraphController {
         viewer.enableAutoLayout();
         viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY);
 
+        // Create JavaFX view panel and make it fit its parent node
         viewPanel = (FxViewPanel) viewer.addDefaultView(false, new FxGraphRenderer());
         AnchorPane.setBottomAnchor(viewPanel, 0.0);
         AnchorPane.setTopAnchor(viewPanel, 0.0);
