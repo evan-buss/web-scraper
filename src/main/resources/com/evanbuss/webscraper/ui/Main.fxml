@@ -4,8 +4,8 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.*?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="508.0"
-            prefWidth="734.0" xmlns="http://javafx.com/javafx/10.0.2" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600"
+            prefWidth="800" xmlns="http://javafx.com/javafx/10.0.2" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.evanbuss.webscraper.ui.controllers.MainController">
     <TabPane fx:id="tabPane" prefHeight="400.0" prefWidth="686.0" tabClosingPolicy="UNAVAILABLE"
              AnchorPane.bottomAnchor="0.0"

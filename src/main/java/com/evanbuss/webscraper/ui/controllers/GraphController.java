@@ -1,9 +1,11 @@
 package com.evanbuss.webscraper.ui.controllers;
 
 import com.evanbuss.webscraper.models.ParsedPagesModel;
+import com.evanbuss.webscraper.utils.ParseUtils;
 import com.evanbuss.webscraper.utils.WebUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import org.graphstream.graph.Element;
@@ -21,10 +23,11 @@ import java.util.EnumSet;
 
 public class GraphController {
 
+    public Label nodeLabel;
+    @FXML
+    private TextArea nodeData;
     @FXML
     private AnchorPane graphPane;
-    @FXML
-    private Label nodeLabel;
     private FxViewPanel viewPanel;
     // static so that close() is invoked from Application class. otherwise the app never closes
     public static FxViewer viewer;
@@ -82,12 +85,14 @@ public class GraphController {
                         event.getY());
                 if (e != null) {
                     nodeLabel.setText(e.getId());
+                    nodeData.setText(ParseUtils.resultToJSON(ParsedPagesModel.getInstance().getResultModel(e.getId())));
                 }
             }
         });
     }
 
     public void openInBrowser() {
-        WebUtils.openInBrowser(nodeLabel.getText());
+        String text = nodeLabel.getText();
+        if (!text.isEmpty()) WebUtils.openInBrowser(text);
     }
 }

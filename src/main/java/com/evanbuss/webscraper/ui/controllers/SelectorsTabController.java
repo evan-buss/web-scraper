@@ -6,6 +6,9 @@ import com.evanbuss.webscraper.utils.ParseUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SelectorsTabController {
 
     @FXML
@@ -13,6 +16,13 @@ public class SelectorsTabController {
     @FXML
     private TextArea resultsTA;
     private MainController mainController;
+
+    private Map<String, String> replaceChars = Map.of(
+            "{", "}",
+            "[", "]",
+            "\"", "\"",
+            "(", ")"
+    );
 
     @FXML
     public void initialize() {
@@ -27,16 +37,8 @@ public class SelectorsTabController {
                         selectorTA.positionCaret(replaceIndex + 2);
                     }
                     // Automatically append a ] when [ is typed
-                    else if (event.getCharacter().equals("[") || event.getCharacter().equals("{")) {
-                        String pairChar = "";
-                        switch (event.getCharacter()) {
-                            case "[":
-                                pairChar = "]";
-                                break;
-                            case "{":
-                                pairChar = "}";
-                                break;
-                        }
+                    else if (replaceChars.containsKey(event.getCharacter())) {
+                        String pairChar = replaceChars.get(event.getCharacter());
                         String text = selectorTA.getText();
                         if (selectorTA.getCaretPosition() == selectorTA.getText().length()) {
                             text += " ";

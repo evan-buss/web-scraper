@@ -1,5 +1,6 @@
 .monospace-text {
-    -fx-font-family: monospace;
+    -fx-font-family: 'Consolas', 'SF Mono', 'DejaVu Sans Mono', 'monospace';
+    -fx-font-size: 14px;
 }
 
 .text-area {

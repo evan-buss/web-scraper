@@ -70,6 +70,10 @@ public class ParsedPagesModel {
         counter = 0;
     }
 
+    public ResultModel getResultModel(String url) {
+        return data.get(url);
+    }
+
     public void saveToFile(File selectedFile) {
         Thread writerThread =
                 new Thread(

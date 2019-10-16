@@ -140,6 +140,8 @@ public class Crawler implements Runnable {
 
     public void shutdown() {
         isRunning = false;
+        // Even if the queue should be cleared, pressing the STOP button should stop it immediately
+        threadPool.shutdownNow();
     }
 
     public void setDoneListener(CrawlingDoneListener listener) {
