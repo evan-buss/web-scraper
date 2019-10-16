@@ -3,7 +3,7 @@ package com.evanbuss.webscraper.crawler;
 import com.evanbuss.webscraper.models.QueryModel;
 import com.evanbuss.webscraper.ui.CrawlingDoneListener;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -81,13 +81,13 @@ public class Crawler implements Runnable {
                         builder.numThreads,
                         4,
                         TimeUnit.SECONDS,
-                        new LinkedBlockingQueue<>());
+                        new PriorityBlockingQueue<>());
     }
 
     @Override
     public void run() {
         long startTime = System.currentTimeMillis();
-        threadPool.execute(new ScrapingThread(url, query, threadPool, delay, 1));
+        threadPool.execute(new ScrapingThread(url, null, query, threadPool, delay, 1));
 
         int idleCounter = 0;
 

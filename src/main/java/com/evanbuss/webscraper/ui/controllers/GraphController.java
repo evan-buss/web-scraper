@@ -21,12 +21,13 @@ import java.util.EnumSet;
 
 public class GraphController {
 
-    //    public Label nodeLabel;
     @FXML
     private AnchorPane graphPane;
     @FXML
     private Label nodeLabel;
     private FxViewPanel viewPanel;
+    // static so that close() is invoked from Application class. otherwise the app never closes
+    public static FxViewer viewer;
 
     public GraphController() {
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
@@ -36,22 +37,20 @@ public class GraphController {
         graph.setAttribute("ui.antialias");
 
         // Initialize graph view
-        FxViewer viewer = new FxViewer(graph, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        viewer = new FxViewer(graph, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
         viewer.enableAutoLayout();
+        viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY);
 
         viewPanel = (FxViewPanel) viewer.addDefaultView(false, new FxGraphRenderer());
         AnchorPane.setBottomAnchor(viewPanel, 0.0);
         AnchorPane.setTopAnchor(viewPanel, 0.0);
         AnchorPane.setRightAnchor(viewPanel, 0.0);
         AnchorPane.setLeftAnchor(viewPanel, 0.0);
-
-        viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.EXIT);
     }
 
     @FXML
     public void initialize() {
         graphPane.getChildren().add(viewPanel);
-
         // Control camera zoom with mouse scroll wheel
         graphPane.setOnScroll(event -> {
             // Adjust the zoom factor as per your requirement
@@ -80,7 +79,6 @@ public class GraphController {
                         EnumSet.of(InteractiveElement.NODE),
                         event.getX(),
                         event.getY());
-
                 if (e != null) {
                     nodeLabel.setText(e.getId());
                 }

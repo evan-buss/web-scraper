@@ -9,6 +9,6 @@
     <AnchorPane fx:id="graphPane" VBox.vgrow="ALWAYS"/>
     <HBox alignment="CENTER" prefHeight="26.0" prefWidth="600.0">
         <Label fx:id="nodeLabel" onMouseClicked="#openInBrowser"
-               text="https://www.imdb.com/title/tt7286456/?ref_=fn_al_tt_1"/>
+        />
     </HBox>
 </VBox>
