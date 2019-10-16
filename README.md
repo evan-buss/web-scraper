@@ -1,6 +1,8 @@
 # web-scraper
 Breadth first search web scraper written in Java using the JavaFX toolkit.
 
+![demo](https://media.giphy.com/media/hSLIpqLXcMAEl5pgic/giphy.gif)
+
 ## GUI
 ### Settings View
 ![settings view](https://raw.githubusercontent.com/evan-buss/web-scraper-swing/master/screenshot/settings.png)
