@@ -28,7 +28,6 @@ public class ParseUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ParseUtils.class);
 
-
     /**
      * Retrieve the HTML from the website located at URL
      *

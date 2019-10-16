@@ -17,24 +17,6 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 public class ResultModel {
-    // public final List<ResultPair> data = new ArrayList<>();
-    // Holds each data name and variable result
-    // public final Map<String, String> data = new LinkedHashMap<>();
     public Multimap<String, String> data = ArrayListMultimap.create();
     public final List<String> links = new ArrayList<>();
-
-    /**
-     * ResultPair represents a single data result. It contains the user's desired variable name and
-     * the data itself
-     */
-    @ToString
-    public static class ResultPair {
-        public final String name;
-        public final String value;
-
-        public ResultPair(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-    }
 }
