@@ -1,5 +1,6 @@
 package com.evanbuss.webscraper.models;
 
+import com.evanbuss.webscraper.models.adapters.ResultModelDataAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.graphstream.graph.Graph;
@@ -16,11 +17,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * ParsedPagesModel holds all the details of the pages that have been parsed. It stores a ConcurrentHashMap with site
+ * names as the key and ResultModel as values. Each ResultModel contains the requested information scraped from each page
+ * The model also stores a GraphStream Graph object that is appended to each time a site is added to the model.
+ */
 public class ParsedPagesModel {
     private final ConcurrentMap<String, ResultModel> data = new ConcurrentHashMap<>();
     private long counter;
     private Graph graph;
-    private int prevDepth = 1;
+    private int prevDepth = 1; //Keep track of when the depth changes to change node color
     private String randomColor = generateNewColor();
 
     private static ParsedPagesModel parsedPagesModel = new ParsedPagesModel();
@@ -34,7 +40,8 @@ public class ParsedPagesModel {
         graph = new MultiGraph("pages");
     }
 
-    public synchronized void addItem(String url, String prevURL, ResultModel model, int depth) {
+    //    FIXME: Experimental non synchronized
+    public void addItem(String url, String prevURL, ResultModel model, int depth) {
         if (data.putIfAbsent(url, model) == null) {
             Node newNode = graph.addNode(url);
 //            newNode.setAttribute("ui.label", depth);
@@ -67,7 +74,9 @@ public class ParsedPagesModel {
 
     public void clear() {
         data.clear();
+        graph.clear();
         counter = 0;
+        prevDepth = 1;
     }
 
     public ResultModel getResultModel(String url) {

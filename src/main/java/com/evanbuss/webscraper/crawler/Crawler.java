@@ -110,7 +110,7 @@ public class Crawler implements Runnable {
                 idleCounter++;
             }
 
-            // We effectively have a 4 second "timeout" period of no work being done before exiting
+            // We effectively have a 4 * delay "timeout" period of no work being done before exiting
             if (idleCounter > 4) {
                 System.out.println("Idle timeout");
                 isRunning = false;
@@ -131,7 +131,7 @@ public class Crawler implements Runnable {
         // System.out.println("Completely shutdown?");
         while (threadPool.isTerminating()) {
         }
-        doneListener.crawlingDone();
+        doneListener.done();
     }
 
     public long[] getStats() {

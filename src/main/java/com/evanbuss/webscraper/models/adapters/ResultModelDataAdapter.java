@@ -1,5 +1,6 @@
-package com.evanbuss.webscraper.models;
+package com.evanbuss.webscraper.models.adapters;
 
+import com.evanbuss.webscraper.models.ResultModel;
 import com.google.common.collect.Iterables;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

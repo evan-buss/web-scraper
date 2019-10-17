@@ -14,7 +14,7 @@ public class MainController {
     @FXML
     private SelectorsTabController selectorsTabController;
     @FXML
-    private GraphController graphTabController;
+    private GraphTabController graphTabController;
 
     private String baseURI;
 

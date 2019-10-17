@@ -20,7 +20,7 @@ class ScrapingThread implements Runnable, Comparable<ScrapingThread> {
     private int depth;
     private String prevUrl;
 
-    private Logger log = LoggerFactory.getLogger(ScrapingThread.class);
+    private Logger logger = LoggerFactory.getLogger(ScrapingThread.class);
 
     ScrapingThread(
             String url,
@@ -39,35 +39,44 @@ class ScrapingThread implements Runnable, Comparable<ScrapingThread> {
 
     @Override
     public void run() {
+        // Ignore as the last threads will always be interrupted before shutdown
         try {
             Thread.sleep(delay);
-            System.out.println(depth);
-
-            String[] result = ParseUtils.urlToHTML(url);
-
-            ResultModel resultModel = ParseUtils.queryToResult(query, result[0], result[1]);
-
-            if (notModelContains(url)) ParsedPagesModel.getInstance().addItem(url, prevUrl, resultModel, depth);
-
-            // For each link found, we need to
-            resultModel.links.forEach(
-                    newURL -> {
-                        if (notModelContains(newURL)
-                                && !threadPool.isShutdown()
-                                && !threadPool.isTerminating()) {
-                            Runnable scraper = new ScrapingThread(newURL, url, query, threadPool, delay, depth + 1);
-                            if (!threadPool.getQueue().contains(scraper) ) {
-                                threadPool.execute(scraper);
-                            }
-                        }
-                    });
-        } catch (IOException | IllegalArgumentException | InterruptedException e) {
-            log.warn("{}: {}", url, e.getMessage());
+        } catch (InterruptedException ignored) {
         }
-    }
 
-    private boolean notModelContains(String url) {
-        return !ParsedPagesModel.getInstance().contains(url);
+        // Get HTML code for the given URL
+        String[] result;
+        try {
+            result = ParseUtils.urlToHTML(url);
+        } catch (IOException e) {
+            logger.error("Could not get HTML: {}: {}", url, e.getMessage());
+            return;
+        }
+
+        // Get the results from parsing the html
+        ResultModel resultModel;
+        try {
+            resultModel = ParseUtils.queryToResult(query, result[0], result[1]);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return;
+        }
+
+        ParsedPagesModel.getInstance().addItem(url, prevUrl, resultModel, depth);
+
+        // For each link found, we need to
+        resultModel.links.forEach(
+                newURL -> {
+                    if (!ParsedPagesModel.getInstance().contains(newURL)
+                            && !threadPool.isShutdown()
+                            && !threadPool.isTerminating()) {
+                        Runnable scraper = new ScrapingThread(newURL, url, query, threadPool, delay, depth + 1);
+                        if (!threadPool.getQueue().contains(scraper)) {
+                            threadPool.execute(scraper);
+                        }
+                    }
+                });
     }
 
     @Override

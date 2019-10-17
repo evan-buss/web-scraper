@@ -21,7 +21,7 @@ import org.graphstream.ui.view.util.InteractiveElement;
 
 import java.util.EnumSet;
 
-public class GraphController {
+public class GraphTabController {
 
     public Label nodeLabel;
     @FXML
@@ -32,7 +32,7 @@ public class GraphController {
     // static so that close() is invoked from Application class. otherwise the app never closes
     public static FxViewer viewer;
 
-    public GraphController() {
+    public GraphTabController() {
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         // Initialize graph
         Graph graph = ParsedPagesModel.getInstance().getGraph();

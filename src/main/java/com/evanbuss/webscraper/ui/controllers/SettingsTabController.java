@@ -131,7 +131,6 @@ public class SettingsTabController {
                 return;
             }
 
-            ParsedPagesModel.getInstance().clear();
             try {
                 // Ensure valid URL
                 if (urlField.getText().length() == 0) throw new MalformedURLException();
@@ -142,10 +141,13 @@ public class SettingsTabController {
                 return;
             }
 
+            resetState();
+
             crawler = buildCrawler(queryModel);
             crawler.setDoneListener(
                     () -> {
                         timeline.stop();
+                        isRunning = false;
                         Platform.runLater(() -> runButton.setText("Start"));
                     });
 
@@ -255,5 +257,13 @@ public class SettingsTabController {
 
     void inject(MainController controller) {
         mainController = controller;
+    }
+
+    private void resetState() {
+        ParsedPagesModel.getInstance().clear();
+        currentTime = 0;
+        elapsedLabel.setText("");
+        progressLabel.setText("");
+        parsedLabel.setText("");
     }
 }

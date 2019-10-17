@@ -1,6 +1,6 @@
 package com.evanbuss.webscraper.ui;
 
-import com.evanbuss.webscraper.ui.controllers.GraphController;
+import com.evanbuss.webscraper.ui.controllers.GraphTabController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -21,7 +21,7 @@ public class Application extends javafx.application.Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        GraphController.viewer.close();
+        GraphTabController.viewer.close();
     }
 
     public static void main(String[] args) {

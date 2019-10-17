@@ -63,27 +63,37 @@ public class SelectorsTabController {
      */
     @FXML
     public void parseSelectors() {
-        try {
-            QueryModel queryModel = ParseUtils.jsonToQuery(selectorTA.getText());
+        QueryModel queryModel;
+        ResultModel result;
 
-            // Make sure the user has entered a website before trying to extract data
-            if (mainController.getHTML().length() == 0) {
-                resultsTA.setText(
-                        "Set a \"Base URL\" in the Settings tab to validate your queries against.");
-                return;
-            }
-            ResultModel result =
-                    ParseUtils.queryToResult(
-                            queryModel, mainController.getHTML(), mainController.getBaseURI());
-            String json = ParseUtils.resultToJSON(result);
-            resultsTA.setText(json);
+        try {
+            queryModel = ParseUtils.jsonToQuery(selectorTA.getText());
         } catch (Exception e) {
-            resultsTA.setText("Error: Could not parse your input.\n\nPlease update and try again.");
+            resultsTA.setText("Error in JSON selector.\n\nPlease check syntax and try again.");
+            return;
         }
+
+        // Make sure the user has entered a website before trying to extract data
+        if (mainController.getHTML().length() == 0) {
+            resultsTA.setText(
+                    "Set a \"Base URL\" in the Settings tab to validate your queries against.");
+            return;
+        }
+
+        try {
+            result = ParseUtils.queryToResult(
+                    queryModel, mainController.getHTML(), mainController.getBaseURI());
+        } catch (Exception e) {
+            resultsTA.setText("Syntax error.\n\n" + e.getMessage());
+            return;
+        }
+
+        String json = ParseUtils.resultToJSON(result);
+        resultsTA.setText(json);
     }
 
     void setResultText() {
-        resultsTA.setText("Invalid JSON, please fix it.");
+        resultsTA.setText("Invalid JSON.\n\nPlease fix selector before starting crawl.");
     }
 
     String getJSON() {
