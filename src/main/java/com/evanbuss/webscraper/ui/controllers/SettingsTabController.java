@@ -132,10 +132,10 @@ public class SettingsTabController {
             }
 
             try {
+                setURLError(false);
                 // Ensure valid URL
                 if (urlField.getText().length() == 0) throw new MalformedURLException();
                 new URL(urlField.getText());
-                setURLError(false);
             } catch (MalformedURLException ex) {
                 setURLError(true);
                 return;
@@ -215,21 +215,20 @@ public class SettingsTabController {
      */
     private void loadSiteData() {
         enableProgress(true);
-        Thread thread =
-                new Thread(
-                        () -> {
-                            try {
-                                String[] html = ParseUtils.urlToHTML(urlField.getText());
-                                mainController.updateHTML(html[0]);
-                                mainController.setBaseURI(html[1]);
-                                setURLError(false);
-                            } catch (IOException e) {
-                                setURLError(true);
-                            } finally {
-                                enableProgress(false);
-                            }
-                        });
-        thread.start();
+        new Thread(
+                () -> {
+                    try {
+                        setURLError(false);
+                        new URL(urlField.getText());
+                        String[] html = ParseUtils.urlToHTML(urlField.getText());
+                        mainController.updateHTML(html[0]);
+                        mainController.setBaseURI(html[1]);
+                    } catch (IOException e) {
+                        setURLError(true);
+                    } finally {
+                        enableProgress(false);
+                    }
+                }).start();
     }
 
     private void setURLError(boolean error) {
