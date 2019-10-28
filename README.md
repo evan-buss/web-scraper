@@ -51,14 +51,14 @@ Breadth first search web scraper written in Java using the JavaFX toolkit.
             - `<p>Hello <e>World!</e></p>` -> `Hello World!`
         - `owntext` - get only the text between the given element
             - `<p>Hello <e>World!</e></p>` -> `Hello`
-        - `href`
+        - `href` - get link contained in `href=` attribute
 
 #### Structure
 - The selector should be a valid JSON object. It must have a `data` and `links` tag.
-- Each data element has a custom title to identify it
+- Each data element you want to extract has a unique title to identify it
 - The links tag is an array of selectors pointing to anchor tags
-    - The crawler will use these links' `href` attribute to traverse the internet.
-    - If you do not care what links you are selecting just use `a`
+    - The crawler will use these links' `href` attribute to traverse from page to page.
+    - If you do not care what links you are selecting just use `a` to follow any anchor tag link.
     
 ### Scraped Graph
 ![graph view](https://raw.githubusercontent.com/evan-buss/web-scraper-swing/master/screenshot/graph.png)
@@ -77,7 +77,7 @@ Breadth first search web scraper written in Java using the JavaFX toolkit.
 - Gson
 - JavaFX 
 - GraphStream
-- sjl4j / logback
+- SLF4J / Logback
 
 ## Development
 - The project uses the Gradle build system. Simply import the project into any IDE and run the "application -> run" task
